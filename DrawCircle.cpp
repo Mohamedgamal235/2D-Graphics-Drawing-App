@@ -1,3 +1,22 @@
-//
-// Created by Gemmy on 19/05/2025.
-//
+#include <windows.h>
+
+void DrawCircleDirect(HDC hdc, int xc, int yc, int r){
+
+
+}
+
+void DrawCirclePolar(HDC hdc, int xc, int yc, int r){
+
+}
+
+void DrawCircleIterative(HDC hdc, int xc, int yc, int r){
+
+}
+
+void DrawCircleMidpoint(HDC hdc, int xc, int yc, int r){
+
+}
+
+void DrawCircleModifiedMidpoint(HDC hdc, int xc, int yc, int r){
+
+}
