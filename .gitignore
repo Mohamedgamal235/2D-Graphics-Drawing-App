@@ -1,0 +1,25 @@
+# Ignore CLion IDE project files
+.idea/
+*.iml
+
+# Ignore CMake build directories
+cmake-build-*/
+
+# Ignore compiled object files and executables
+*.o
+*.obj
+*.exe
+*.out
+*.a
+*.so
+*.dll
+
+# Ignore user-specific config files
+*.user
+*.log
+
+# Ignore backup/swap/temp files
+*~
+*.swp
+.DS_Store
+Thumbs.db
