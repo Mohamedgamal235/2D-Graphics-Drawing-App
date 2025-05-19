@@ -1,3 +1,11 @@
-//
-// Created by Gemmy on 19/05/2025.
-//
+#include <windows.h>
+
+void DrawEllipseDirect(HDC hdc){
+
+}
+void DrawEllipsePolar(HDC hdc){
+
+}
+void DrawEllipseMidpoint(HDC hdc){
+
+}
