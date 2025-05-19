@@ -157,6 +157,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         }
 
         case WM_LBUTTONDOWN:
+            // ممكن نعمل هنا سويتش بس لسه بفكر فيها تتعمل ازاي ممكن تكتب كود عادي
+            // وابقي غير الحته دي اول ما يعمل رن معاك رجعها مكانها بعد اذنك
             startPoint.x = LOWORD(lParam);
             startPoint.y = HIWORD(lParam);
             isDrawing = true;
