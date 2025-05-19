@@ -135,39 +135,39 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         case WM_COMMAND: {
             DrawShap cmd = (DrawShap)(LOWORD(wParam));
             if (cmd >= RED && cmd <= BLACK) {
-                if (cmd == RED)
-                    currColor = RGB(255 , 0 , 0);
-                else if (cmd == GREEN)
-                    currColor = RGB(0 , 255 , 0);
-                else if (cmd == BLUE)
-                    currColor = RGB(0 , 0 , 255);
-                else
-                    currColor = RGB(0,0,0);
-            }
-            else if (cmd == CLEAR_SCREEN) {
-                InvalidateRect(hwnd , NULL , TRUE);
+                switch (cmd) {
+                    case RED:   currColor = RGB(255, 0, 0); break;
+                    case GREEN: currColor = RGB(0, 255, 0); break;
+                    case BLUE:  currColor = RGB(0, 0, 255); break;
+                    case BLACK: currColor = RGB(0, 0, 0); break;
+                }
+            } else if (cmd == CLEAR_SCREEN) {
+                InvalidateRect(hwnd, NULL, TRUE);
             }
             // else if (cmd == SAVE_SCREEN) {
-            //     // cooooooooodddddddeeeee
+            //
             // }
             // else if (cmd == LOAD_SCREEN) {
-            //     // cooooooooodddddddeeeee
+            //
             // }
-            else
-                currShape = cmd ;
+            else {
+                currShape = cmd;
+            }
             break;
         }
+
         case WM_LBUTTONDOWN:
             startPoint.x = LOWORD(lParam);
             startPoint.y = HIWORD(lParam);
-            isDrawing = true ;
+            isDrawing = true;
             break;
+
         case WM_LBUTTONUP: {
-            if (!isDrawing)
-                return 0;
+            if (!isDrawing) break;
             int x2 = LOWORD(lParam);
             int y2 = HIWORD(lParam);
             HDC hdc = GetDC(hwnd);
+
             switch (currShape) {
                 case LINE_DDA:
                     DrawLineDDA(hdc, startPoint.x , startPoint.y , x2 , y2 , currColor);
@@ -248,23 +248,27 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     break;
             }
             ReleaseDC(hwnd, hdc);
+            isDrawing = false;
             break;
         }
+
         case WM_DESTROY:
             PostQuitMessage(0);
             break;
+
         default:
             return DefWindowProc(hwnd, uMsg, wParam, lParam);
     }
+    return 0;
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
     WNDCLASS wc = {};
-    wc.lpfnWndProc   = WindowProc;
-    wc.hInstance     = hInstance;
+    wc.lpfnWndProc = WindowProc;
+    wc.hInstance = hInstance;
     wc.lpszClassName = "2D Drawing App";
-    wc.hCursor       = LoadCursor(NULL, IDC_HAND);
-    wc.hbrBackground = (HBRUSH)(CreateSolidBrush(RGB(255,255,255)));
+    wc.hCursor = LoadCursor(NULL, IDC_HAND);
+    wc.hbrBackground = (HBRUSH)(CreateSolidBrush(RGB(255, 255, 255)));
 
     RegisterClass(&wc);
 
