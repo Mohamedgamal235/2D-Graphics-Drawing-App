@@ -1,3 +1,5 @@
-//
-// Created by Gemmy on 19/05/2025.
-//
+#include <windows.h>
+
+void DrawCardinalSpline(HDC hdc){
+
+}
