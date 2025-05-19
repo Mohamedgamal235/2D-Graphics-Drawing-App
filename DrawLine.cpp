@@ -1,12 +1,12 @@
 #include <windows.h>
 
-void DrawLineDDA(int x1, int y1, int x2, int y2, HDC hdc){
+void DrawLineDDA(HDC hdc , int x1, int y1, int x2, int y2){
 
 }
-void DrawLineMidpoint(int x1, int y1, int x2, int y2, HDC hdc){
+void DrawLineMidpoint(HDC hdc , int x1, int y1, int x2, int y2){
 
 }
 
-void DrawLineParametric(int x1, int y1, int x2, int y2, HDC hdc){
+void DrawLineParametric(HDC hdc , int x1, int y1, int x2, int y2){
 
 }
