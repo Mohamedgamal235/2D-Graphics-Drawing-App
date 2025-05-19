@@ -131,7 +131,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         case WM_CREATE:
             creatDrawingMenu(hwnd);
             break;
-        case WM_COMMAND:
+
+        case WM_COMMAND: {
             DrawShap cmd = (DrawShap)(LOWORD(wParam));
             if (cmd >= RED && cmd <= BLACK) {
                 if (cmd == RED)
@@ -146,27 +147,27 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             else if (cmd == CLEAR_SCREEN) {
                 InvalidateRect(hwnd , NULL , TRUE);
             }
-            else if (cmd == SAVE_SCREEN) {
-                // cooooooooodddddddeeeee
-            }
-            else if (cmd == LOAD_SCREEN) {
-                // cooooooooodddddddeeeee
-            }
+            // else if (cmd == SAVE_SCREEN) {
+            //     // cooooooooodddddddeeeee
+            // }
+            // else if (cmd == LOAD_SCREEN) {
+            //     // cooooooooodddddddeeeee
+            // }
             else
                 currShape = cmd ;
             break;
+        }
         case WM_LBUTTONDOWN:
             startPoint.x = LOWORD(lParam);
-            startPoint.x = HIWORD(lParam);
+            startPoint.y = HIWORD(lParam);
             isDrawing = true ;
             break;
-        case WM_LBUTTONUP:
+        case WM_LBUTTONUP: {
             if (!isDrawing)
                 return 0;
             int x2 = LOWORD(lParam);
             int y2 = HIWORD(lParam);
             HDC hdc = GetDC(hwnd);
-
             switch (currShape) {
                 case LINE_DDA:
                     DrawLineDDA(hdc, startPoint.x , startPoint.y , x2 , y2 , currColor);
@@ -177,75 +178,78 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 case LINE_PARAMETRIC:
                     DrawLineParametric(hdc, startPoint.x , startPoint.y , x2 , y2 , currColor);
                     break;
-                case CIRCLE_DIRECT:
-                    // code
-                    break;
-                case CIRCLE_POLAR:
-                    // code
-                    break;
-                case CIRCLE_ITERATIVE_POLAR:
-                    // code
-                    break;
-                case CIRCLE_MIDPOINT:
-                    // code
-                    break;
-                case CIRCEL_MODIFIED_MIDPOINT:
-                    // code
-                    break;
-                case FILL_CIRCLE_WITH_LINE:
-                    // code
-                    break;
-                case FILL_CIRCLE_WITH_CIRCLE:
-                    // code
-                    break;
-                case FILL_HERMITE:
-                    // code
-                    break;
-                case FILL_BEZIER:
-                    // code
-                    break;
-                case FILL_CONVEX:
-                    // code
-                    break;
-                case FILL_NONCONVEX:
-                    // code
-                    break;
-                case FLOOD_FILL_RECURSIVE:
-                    // code
-                    break;
-                case FLOOD_FILL_NONRECURSIVE:
-                    // code
-                    break;
-                case SPLINE_CARDINAL:
-                    // code
-                    break;
-                case ELLIPSE_DIRECT:
-                    // code
-                    break;
-                case ELLIPSE_POLAR:
-                    // code
-                    break;
-                case ELLIPSE_MIDPOINT:
-                    // code
-                    break;
-                case CLIP_POINT_RECT:
-                    // code
-                    break;
-                case CLIP_LINE_RECT:
-                    // code
-                    break;
-                case CLIP_POLYGON_RECT:
-                    // code
-                    break;
-                case CLIP_POINT_SQUARE:
-                    // code
-                    break;
-                case CLIP_LINE_SQUARE:
-                    // code
-                    break;
+                // case CIRCLE_DIRECT:
+                //     // code
+                //     break;
+                // case CIRCLE_POLAR:
+                //     // code
+                //     break;
+                // case CIRCLE_ITERATIVE_POLAR:
+                //     // code
+                //     break;
+                // case CIRCLE_MIDPOINT:
+                //     // code
+                //     break;
+                // case CIRCEL_MODIFIED_MIDPOINT:
+                //     // code
+                //     break;
+                // case FILL_CIRCLE_WITH_LINE:
+                //     // code
+                //     break;
+                // case FILL_CIRCLE_WITH_CIRCLE:
+                //     // code
+                //     break;
+                // case FILL_HERMITE:
+                //     // code
+                //     break;
+                // case FILL_BEZIER:
+                //     // code
+                //     break;
+                // case FILL_CONVEX:
+                //     // code
+                //     break;
+                // case FILL_NONCONVEX:
+                //     // code
+                //     break;
+                // case FLOOD_FILL_RECURSIVE:
+                //     // code
+                //     break;
+                // case FLOOD_FILL_NONRECURSIVE:
+                //     // code
+                //     break;
+                // case SPLINE_CARDINAL:
+                //     // code
+                //     break;
+                // case ELLIPSE_DIRECT:
+                //     // code
+                //     break;
+                // case ELLIPSE_POLAR:
+                //     // code
+                //     break;
+                // case ELLIPSE_MIDPOINT:
+                //     // code
+                //     break;
+                // case CLIP_POINT_RECT:
+                //     // code
+                //     break;
+                // case CLIP_LINE_RECT:
+                //     // code
+                //     break;
+                // case CLIP_POLYGON_RECT:
+                //     // code
+                //     break;
+                // case CLIP_POINT_SQUARE:
+                //     // code
+                //     break;
+                // case CLIP_LINE_SQUARE:
+                //     // code
+                //     break;
                 default:
                     break;
             }
+            ReleaseDC(hwnd, hdc);
+            break;
+        }
         case WM_DESTROY:
             PostQuitMessage(0);
             break;
