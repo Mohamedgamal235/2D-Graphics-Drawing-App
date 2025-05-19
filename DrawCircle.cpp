@@ -9,7 +9,7 @@ void DrawCirclePolar(HDC hdc, int xc, int yc, int r){
 
 }
 
-void DrawCircleIterative(HDC hdc, int xc, int yc, int r){
+void DrawCircleIterativePolar(HDC hdc, int xc, int yc, int r){
 
 }
 
