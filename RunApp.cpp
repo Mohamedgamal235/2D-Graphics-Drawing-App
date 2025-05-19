@@ -161,8 +161,91 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             isDrawing = true ;
             break;
         case WM_LBUTTONUP:
+            if (!isDrawing)
+                return 0;
+            int x2 = LOWORD(lParam);
+            int y2 = HIWORD(lParam);
+            HDC hdc = GetDC(hwnd);
 
-            break;
+            switch (currShape) {
+                case LINE_DDA:
+                    DrawLineDDA(hdc, startPoint.x , startPoint.y , x2 , y2 , currColor);
+                    break;
+                case LINE_MIDPOINT:
+                    DrawLineMidpoint(hdc, startPoint.x , startPoint.y , x2 , y2 , currColor);
+                    break;
+                case LINE_PARAMETRIC:
+                    DrawLineParametric(hdc, startPoint.x , startPoint.y , x2 , y2 , currColor);
+                    break;
+                case CIRCLE_DIRECT:
+                    // code
+                    break;
+                case CIRCLE_POLAR:
+                    // code
+                    break;
+                case CIRCLE_ITERATIVE_POLAR:
+                    // code
+                    break;
+                case CIRCLE_MIDPOINT:
+                    // code
+                    break;
+                case CIRCEL_MODIFIED_MIDPOINT:
+                    // code
+                    break;
+                case FILL_CIRCLE_WITH_LINE:
+                    // code
+                    break;
+                case FILL_CIRCLE_WITH_CIRCLE:
+                    // code
+                    break;
+                case FILL_HERMITE:
+                    // code
+                    break;
+                case FILL_BEZIER:
+                    // code
+                    break;
+                case FILL_CONVEX:
+                    // code
+                    break;
+                case FILL_NONCONVEX:
+                    // code
+                    break;
+                case FLOOD_FILL_RECURSIVE:
+                    // code
+                    break;
+                case FLOOD_FILL_NONRECURSIVE:
+                    // code
+                    break;
+                case SPLINE_CARDINAL:
+                    // code
+                    break;
+                case ELLIPSE_DIRECT:
+                    // code
+                    break;
+                case ELLIPSE_POLAR:
+                    // code
+                    break;
+                case ELLIPSE_MIDPOINT:
+                    // code
+                    break;
+                case CLIP_POINT_RECT:
+                    // code
+                    break;
+                case CLIP_LINE_RECT:
+                    // code
+                    break;
+                case CLIP_POLYGON_RECT:
+                    // code
+                    break;
+                case CLIP_POINT_SQUARE:
+                    // code
+                    break;
+                case CLIP_LINE_SQUARE:
+                    // code
+                    break;
+                default:
+                    break;
+            }
         case WM_DESTROY:
             PostQuitMessage(0);
             break;
@@ -182,7 +265,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
     RegisterClass(&wc);
 
     HWND hwnd = CreateWindowEx(
-        0, "2D Drawing AppGraphicsAlgorithms", "Drawing Algorithms", WS_OVERLAPPEDWINDOW,
+        0, "2D Drawing App", "Drawing Algorithms", WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, CW_USEDEFAULT, 900, 700,
         NULL, NULL, hInstance, NULL
     );
