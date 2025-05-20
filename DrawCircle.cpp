@@ -47,7 +47,7 @@ void DrawCircleIterativePolar(HDC hdc, int xc, int yc, int r){
 void DrawCircleMidpoint(HDC hdc, int xc, int yc, int r, COLORREF color) {
     int x = 0;
     int y = r;
-    int d = 1 - r
+    int d = 1 - r ;
     while (x <= y) {
         Draw8Points(hdc, xc, yc, x, y, color);
         if (d < 0) {
