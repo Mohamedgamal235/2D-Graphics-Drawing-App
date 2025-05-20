@@ -1,6 +1,18 @@
 #include <windows.h>
 #include <cmath>
 
+void Draw8Points(HDC hdc, int xc, int yc, int x, int y, COLORREF color) {
+    SetPixel(hdc, xc + x, yc + y, color);
+    SetPixel(hdc, xc - x, yc + y, color);
+    SetPixel(hdc, xc + x, yc - y, color);
+    SetPixel(hdc, xc - x, yc - y, color);
+    SetPixel(hdc, xc + y, yc + x, color);
+    SetPixel(hdc, xc - y, yc + x, color);
+    SetPixel(hdc, xc + y, yc - x, color);
+    SetPixel(hdc, xc - y, yc - x, color);
+}
+
+
 // Osama
 void DrawCircleDirect(HDC hdc, int xc, int yc, int r, COLORREF color) {
 
@@ -37,15 +49,7 @@ void DrawCircleMidpoint(HDC hdc, int xc, int yc, int r, COLORREF color) {
     int y = R;
     int d = 1 - R;
     while (x <= y) {
-        SetPixel(hdc, xc + x, yc + y, color);
-        SetPixel(hdc, xc - x, yc + y, color);
-        SetPixel(hdc, xc + x, yc - y, color);
-        SetPixel(hdc, xc - x, yc - y, color);
-        SetPixel(hdc, xc + y, yc + x, color);
-        SetPixel(hdc, xc - y, yc + x, color);
-        SetPixel(hdc, xc + y, yc - x, color);
-        SetPixel(hdc, xc - y, yc - x, color);
-
+        Draw8Points(hdc, xc, yc, x, y, color);
         if (d < 0) {
             x++;
             d += 2 * x + 3;
