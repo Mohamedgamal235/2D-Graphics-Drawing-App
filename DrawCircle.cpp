@@ -13,7 +13,7 @@ void Draw8Points(HDC hdc, int xc, int yc, int x, int y, COLORREF color) {
 }
 
 
-// Osama
+// Osama use Draw8Points above
 void DrawCircleDirect(HDC hdc, int xc, int yc, int r, COLORREF color) {
 
 }
@@ -46,8 +46,8 @@ void DrawCircleIterativePolar(HDC hdc, int xc, int yc, int r){
 // Anas Adel
 void DrawCircleMidpoint(HDC hdc, int xc, int yc, int r, COLORREF color) {
     int x = 0;
-    int y = R;
-    int d = 1 - R;
+    int y = r;
+    int d = 1 - r
     while (x <= y) {
         Draw8Points(hdc, xc, yc, x, y, color);
         if (d < 0) {
@@ -64,7 +64,7 @@ void DrawCircleMidpoint(HDC hdc, int xc, int yc, int r, COLORREF color) {
 
 // -------------------------------------------
 
-// Ahmed Mohsen
+// Ahmed Mohsen -> use Draw8Points above
 void DrawCircleModifiedMidpoint(HDC hdc, int xc, int yc, int r){
 
 }
