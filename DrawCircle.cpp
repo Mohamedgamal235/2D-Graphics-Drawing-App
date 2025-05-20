@@ -1,24 +1,25 @@
 #include <windows.h>
+#include <cmath>
+
+// Osama
+void DrawCircleDirect(HDC hdc, int xc, int yc, int r, COLORREF color) {
+
+}
+
+// -------------------------------------------
 
 // Anas Adel
-void DrawCircleDirect(HDC hdc, int xc, int yc, int r, COLORREF color) {
+void DrawCirclePolar(HDC hdc, int xc, int yc, int r , COLORREF color){
     double theta;
     int x, y;
-    
-    double step = 1.0 / r; 
+
+    double step = 1.0 / r;
 
     for (theta = 0; theta <= 2 * 3.14159; theta += step) {
         x = (int)(xc + r * cos(theta));
         y = (int)(yc + r * sin(theta));
         SetPixel(hdc, x, y, color);
     }
-}
-
-// -------------------------------------------
-
-// Osama
-void DrawCirclePolar(HDC hdc, int xc, int yc, int r){
-
 }
 
 // -------------------------------------------
