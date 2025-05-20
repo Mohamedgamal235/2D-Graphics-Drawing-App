@@ -9,17 +9,17 @@
 using namespace std;
 
 enum DrawShap {
-    NONE ,
-    LINE_DDA ,
-    LINE_MIDPOINT ,
+    NONE,
+    LINE_DDA,
+    LINE_MIDPOINT,
     LINE_PARAMETRIC,
-    CIRCLE_DIRECT ,
+    CIRCLE_DIRECT,
     CIRCLE_POLAR,
     CIRCLE_ITERATIVE_POLAR,
     CIRCLE_MIDPOINT,
     CIRCEL_MODIFIED_MIDPOINT,
-    FILL_CIRCLE_WITH_LINE ,
-    FILL_CIRCLE_WITH_CIRCLE ,
+    FILL_CIRCLE_WITH_LINE,
+    FILL_CIRCLE_WITH_CIRCLE,
     FILL_HERMITE,
     FILL_BEZIER,
     FILL_CONVEX,
@@ -35,23 +35,23 @@ enum DrawShap {
     CLIP_POLYGON_RECT,
     CLIP_POINT_SQUARE,
     CLIP_LINE_SQUARE,
-    RED ,
+    RED,
     GREEN,
-    BLUE ,
-    BLACK ,
-    CLEAR_SCREEN ,
-    SAVE_SCREEN ,
+    BLUE,
+    BLACK,
+    CLEAR_SCREEN,
+    SAVE_SCREEN,
     LOAD_SCREEN
 };
 
 struct Point {
-    int x , y ;
+    int x, y;
 };
 
-Point startPoint ;
-DrawShap currShape = NONE ;
-COLORREF currColor = RGB(0,0,0); // black
-bool isDrawing = false ;
+Point startPoint;
+DrawShap currShape = NONE;
+COLORREF currColor = RGB(0, 0, 0); // black
+bool isDrawing = false;
 
 // --------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------
@@ -67,10 +67,10 @@ void creatDrawingMenu(HWND hwnd) {
     HMENU hColorMenu = CreatePopupMenu();
 
     // For Line
-    AppendMenu(hLineMenu , MF_STRING , LINE_DDA , "DDA");
-    AppendMenu(hLineMenu , MF_STRING , LINE_MIDPOINT , "Midpoint");
-    AppendMenu(hLineMenu , MF_STRING , LINE_PARAMETRIC , "Parametric");
-    AppendMenu(hMenu , MF_POPUP , (UINT_PTR)hLineMenu , "Lines");
+    AppendMenu(hLineMenu, MF_STRING, LINE_DDA, "DDA");
+    AppendMenu(hLineMenu, MF_STRING, LINE_MIDPOINT, "Midpoint");
+    AppendMenu(hLineMenu, MF_STRING, LINE_PARAMETRIC, "Parametric");
+    AppendMenu(hMenu, MF_POPUP, (UINT_PTR) hLineMenu, "Lines");
     //-----------------------------------
     // Circle
     AppendMenu(hCircleMenu, MF_STRING, CIRCLE_DIRECT, "Direct");
@@ -78,13 +78,13 @@ void creatDrawingMenu(HWND hwnd) {
     AppendMenu(hCircleMenu, MF_STRING, CIRCLE_ITERATIVE_POLAR, "Iterative Polar");
     AppendMenu(hCircleMenu, MF_STRING, CIRCLE_MIDPOINT, "Midpoint");
     AppendMenu(hCircleMenu, MF_STRING, CIRCEL_MODIFIED_MIDPOINT, "Modified Midpoint");
-    AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hCircleMenu, "Circles");
+    AppendMenu(hMenu, MF_POPUP, (UINT_PTR) hCircleMenu, "Circles");
     //-----------------------------------
     // Ellips
     AppendMenu(hEllipseMenu, MF_STRING, ELLIPSE_DIRECT, "Direct");
     AppendMenu(hEllipseMenu, MF_STRING, ELLIPSE_POLAR, "Polar");
     AppendMenu(hEllipseMenu, MF_STRING, ELLIPSE_MIDPOINT, "Midpoint");
-    AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hEllipseMenu, "Ellipses");
+    AppendMenu(hMenu, MF_POPUP, (UINT_PTR) hEllipseMenu, "Ellipses");
     //-----------------------------------
     // Filling
     AppendMenu(hFillMenu, MF_STRING, FILL_CIRCLE_WITH_LINE, "Circle Fill With Lines");
@@ -93,12 +93,12 @@ void creatDrawingMenu(HWND hwnd) {
     AppendMenu(hFillMenu, MF_STRING, FILL_BEZIER, "Rectangle Fill With Bezier");
     AppendMenu(hFillMenu, MF_STRING, FILL_CONVEX, "Convex Filling");
     AppendMenu(hFillMenu, MF_STRING, FILL_NONCONVEX, "Non-Convex Filling");
-    AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hFillMenu, "Filling");
+    AppendMenu(hMenu, MF_POPUP, (UINT_PTR) hFillMenu, "Filling");
     //-----------------------------------
     // Flood Fill
     AppendMenu(hFloodMenu, MF_STRING, FLOOD_FILL_RECURSIVE, "Flood Fill Recursive");
     AppendMenu(hFloodMenu, MF_STRING, FLOOD_FILL_NONRECURSIVE, "Flood Fill Non-Recursive");
-    AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hFillMenu, "Flood Fill");
+    AppendMenu(hMenu, MF_POPUP, (UINT_PTR) hFloodMenu, "Flood Fill");
     //-----------------------------------
     // Spline
     AppendMenu(hMenu, MF_STRING, SPLINE_CARDINAL, "Cardinal Spline");
@@ -109,21 +109,21 @@ void creatDrawingMenu(HWND hwnd) {
     AppendMenu(hClipMenu, MF_STRING, CLIP_POLYGON_RECT, "Polygon Clip (Rect)");
     AppendMenu(hClipMenu, MF_STRING, CLIP_POINT_SQUARE, "Point Clip (Square)");
     AppendMenu(hClipMenu, MF_STRING, CLIP_LINE_SQUARE, "Line Clip (Square)");
-    AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hClipMenu, "Clipping");
+    AppendMenu(hMenu, MF_POPUP, (UINT_PTR) hClipMenu, "Clipping");
     //-----------------------------------
     // Color
     AppendMenu(hColorMenu, MF_STRING, RED, "Red");
     AppendMenu(hColorMenu, MF_STRING, GREEN, "Green");
     AppendMenu(hColorMenu, MF_STRING, BLUE, "Blue");
     AppendMenu(hColorMenu, MF_STRING, BLACK, "Black");
-    AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hColorMenu, "Color");
+    AppendMenu(hMenu, MF_POPUP, (UINT_PTR) hColorMenu, "Color");
     //-----------------------------------
 
     AppendMenu(hMenu, MF_STRING, CLEAR_SCREEN, "Clear Screen");
     AppendMenu(hMenu, MF_STRING, SAVE_SCREEN, "Save");
     AppendMenu(hMenu, MF_STRING, LOAD_SCREEN, "Load");
 
-    SetMenu(hwnd , hMenu);
+    SetMenu(hwnd, hMenu);
 }
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -133,13 +133,17 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             break;
 
         case WM_COMMAND: {
-            DrawShap cmd = (DrawShap)(LOWORD(wParam));
+            DrawShap cmd = (DrawShap) (LOWORD(wParam));
             if (cmd >= RED && cmd <= BLACK) {
                 switch (cmd) {
-                    case RED:   currColor = RGB(255, 0, 0); break;
-                    case GREEN: currColor = RGB(0, 255, 0); break;
-                    case BLUE:  currColor = RGB(0, 0, 255); break;
-                    case BLACK: currColor = RGB(0, 0, 0); break;
+                    case RED: currColor = RGB(255, 0, 0);
+                        break;
+                    case GREEN: currColor = RGB(0, 255, 0);
+                        break;
+                    case BLUE: currColor = RGB(0, 0, 255);
+                        break;
+                    case BLACK: currColor = RGB(0, 0, 0);
+                        break;
                 }
             } else if (cmd == CLEAR_SCREEN) {
                 InvalidateRect(hwnd, NULL, TRUE);
@@ -172,26 +176,40 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
             switch (currShape) {
                 case LINE_DDA:
-                    DrawLineDDA(hdc, startPoint.x , startPoint.y , x2 , y2 , currColor);
+                    DrawLineDDA(hdc, startPoint.x, startPoint.y, x2, y2, currColor);
                     break;
                 case LINE_MIDPOINT:
-                    DrawLineMidpoint(hdc, startPoint.x , startPoint.y , x2 , y2 , currColor);
+                    DrawLineMidpoint(hdc, startPoint.x, startPoint.y, x2, y2, currColor);
                     break;
                 case LINE_PARAMETRIC:
-                    DrawLineParametric(hdc, startPoint.x , startPoint.y , x2 , y2 , currColor);
+                    DrawLineParametric(hdc, startPoint.x, startPoint.y, x2, y2, currColor);
                     break;
                 // case CIRCLE_DIRECT:
                 //     // code
                 //     break;
-                // case CIRCLE_POLAR:
-                //     // code
-                //     break;
+                case CIRCLE_POLAR: {
+                    int R = (int) sqrt(
+                        (x2 - startPoint.x) * (x2 - startPoint.x) + (y2 - startPoint.y) * (y2 - startPoint.y));
+                    DrawCirclePolar(hdc, startPoint.x, startPoint.y, R, currColor);
+                    break;
+                }
+                case CIRCEL_MODIFIED_MIDPOINT: {
+                    int R = (int) sqrt(
+                        (x2 - startPoint.x) * (x2 - startPoint.x) + (y2 - startPoint.y) * (y2 - startPoint.y));
+
+                    DrawCircleModifiedMidpoint(hdc, startPoint.x, startPoint.y, R, currColor);
+                    break;
+                }
+
                 // case CIRCLE_ITERATIVE_POLAR:
                 //     // code
                 //     break;
-                // case CIRCLE_MIDPOINT:
-                //     // code
-                //     break;
+                case CIRCLE_MIDPOINT: {
+                    int R = (int) sqrt(
+                        (x2 - startPoint.x) * (x2 - startPoint.x) + (y2 - startPoint.y) * (y2 - startPoint.y));
+                    DrawCircleMidpoint(hdc, startPoint.x, startPoint.y, R, currColor);
+                    break;
+                }
                 // case CIRCEL_MODIFIED_MIDPOINT:
                 //     // code
                 //     break;
@@ -216,9 +234,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 // case FLOOD_FILL_RECURSIVE:
                 //     // code
                 //     break;
-                // case FLOOD_FILL_NONRECURSIVE:
-                //     // code
-                //     break;
+                case FLOOD_FILL_NONRECURSIVE:
+                    NonRecursiveFloodFill(hdc, startPoint.x, startPoint.y, currColor, currColor);
+                    break;
                 // case SPLINE_CARDINAL:
                 //     // code
                 //     break;
@@ -270,7 +288,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
     wc.hInstance = hInstance;
     wc.lpszClassName = "2D Drawing App";
     wc.hCursor = LoadCursor(NULL, IDC_HAND);
-    wc.hbrBackground = (HBRUSH)(CreateSolidBrush(RGB(255, 255, 255)));
+    wc.hbrBackground = (HBRUSH) (CreateSolidBrush(RGB(255, 255, 255)));
 
     RegisterClass(&wc);
 

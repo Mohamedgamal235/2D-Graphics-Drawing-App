@@ -1,4 +1,5 @@
 #include <windows.h>
+#define M_PI 3.14159265358979323846
 
 // Anas Adel
 void DrawEllipseDirect(HDC hdc, int x1, int y1, int x2, int y2, COLORREF c) {

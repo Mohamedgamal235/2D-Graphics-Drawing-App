@@ -1,9 +1,29 @@
 #include <windows.h>
+#include <bits/stdc++.h>
 
 // Ahmed Mohsen
-void DrawLineDDA(HDC hdc , int x1, int y1, int x2, int y2 , COLORREF c){
+void DrawLineDDA(HDC hdc, int x1, int y1, int x2, int y2, COLORREF c) {
+    int dx = x2 - x1;
+    int dy = y2 - y1;
 
+    int steps = std::max(abs(dx), abs(dy));
+    if (steps == 0) {
+        SetPixel(hdc, x1, y1, c); // Single point
+        return;
+    }
+
+    double x_inc = dx / (double)steps;
+    double y_inc = dy / (double)steps;
+
+    double x = x1;
+    double y = y1;
+    for (int i = 0; i <= steps; i++) {
+        SetPixel(hdc, round(x), round(y), c);
+        x += x_inc;
+        y += y_inc;
+    }
 }
+
 
 // -------------------------------------------
 

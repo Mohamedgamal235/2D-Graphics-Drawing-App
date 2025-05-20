@@ -1,24 +1,37 @@
 #include <windows.h>
+#include <cmath>
+
+void Draw8Points(HDC hdc, int xc, int yc, int x, int y, COLORREF color) {
+    SetPixel(hdc, xc + x, yc + y, color);
+    SetPixel(hdc, xc - x, yc + y, color);
+    SetPixel(hdc, xc + x, yc - y, color);
+    SetPixel(hdc, xc - x, yc - y, color);
+    SetPixel(hdc, xc + y, yc + x, color);
+    SetPixel(hdc, xc - y, yc + x, color);
+    SetPixel(hdc, xc + y, yc - x, color);
+    SetPixel(hdc, xc - y, yc - x, color);
+}
+
+
+// Osama use Draw8Points above
+void DrawCircleDirect(HDC hdc, int xc, int yc, int r, COLORREF color) {
+
+}
+
+// -------------------------------------------
 
 // Anas Adel
-void DrawCircleDirect(HDC hdc, int xc, int yc, int r, COLORREF color) {
+void DrawCirclePolar(HDC hdc, int xc, int yc, int r , COLORREF color){
     double theta;
     int x, y;
-    
-    double step = 1.0 / r; 
+
+    double step = 1.0 / r;
 
     for (theta = 0; theta <= 2 * 3.14159; theta += step) {
         x = (int)(xc + r * cos(theta));
         y = (int)(yc + r * sin(theta));
         SetPixel(hdc, x, y, color);
     }
-}
-
-// -------------------------------------------
-
-// Osama
-void DrawCirclePolar(HDC hdc, int xc, int yc, int r){
-
 }
 
 // -------------------------------------------
@@ -33,18 +46,10 @@ void DrawCircleIterativePolar(HDC hdc, int xc, int yc, int r){
 // Anas Adel
 void DrawCircleMidpoint(HDC hdc, int xc, int yc, int r, COLORREF color) {
     int x = 0;
-    int y = R;
-    int d = 1 - R;
+    int y = r;
+    int d = 1 - r ;
     while (x <= y) {
-        SetPixel(hdc, xc + x, yc + y, color);
-        SetPixel(hdc, xc - x, yc + y, color);
-        SetPixel(hdc, xc + x, yc - y, color);
-        SetPixel(hdc, xc - x, yc - y, color);
-        SetPixel(hdc, xc + y, yc + x, color);
-        SetPixel(hdc, xc - y, yc + x, color);
-        SetPixel(hdc, xc + y, yc - x, color);
-        SetPixel(hdc, xc - y, yc - x, color);
-
+        Draw8Points(hdc, xc, yc, x, y, color);
         if (d < 0) {
             x++;
             d += 2 * x + 3;
@@ -59,7 +64,24 @@ void DrawCircleMidpoint(HDC hdc, int xc, int yc, int r, COLORREF color) {
 
 // -------------------------------------------
 
-// Ahmed Mohsen
-void DrawCircleModifiedMidpoint(HDC hdc, int xc, int yc, int r){
-
+// Ahmed Mohsen -> use Draw8Points above
+void DrawCircleModifiedMidpoint(HDC hdc, int xc, int yc, int r ,COLORREF c) {
+    int x = 0, y = r, d = 1 - r;
+    int d1 = 3, d2 = 5 - 2 * r;
+    Draw8Points(hdc, xc, yc, x, y, c);
+    while (x < y) {
+        if (d < 0) {
+            d += d1;
+            d1 += 2;
+            d2 += 2;
+            x++;
+        } else {
+            d += d2;
+            d1 += 2;
+            d2 += 4;
+            x++;
+            y--;
+        }
+        Draw8Points(hdc, xc, yc, x, y, c);
+    }
 }
