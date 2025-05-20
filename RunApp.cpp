@@ -183,15 +183,17 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 // case CIRCLE_DIRECT:
                 //     // code
                 //     break;
-                // case CIRCLE_POLAR:
-                //     // code
-                //     break;
+                 case CIRCLE_POLAR:
+                     int R = (int)sqrt((x2 - startPoint.x) * (x2 - startPoint.x) + (y2 - startPoint.y) * (y2 - startPoint.y));
+                     DrawCirclePolar(hdc, startPoint.x, startPoint.y, R, currColor);
+                     break;
                 // case CIRCLE_ITERATIVE_POLAR:
                 //     // code
                 //     break;
-                // case CIRCLE_MIDPOINT:
-                //     // code
-                //     break;
+                 case CIRCLE_MIDPOINT:
+                     int R = (int)sqrt((x2 - startPoint.x) * (x2 - startPoint.x) + (y2 - startPoint.y) * (y2 - startPoint.y));
+                     DrawCircleMidpoint(hdc, startPoint.x, startPoint.y, R, currColor);
+                     break;
                 // case CIRCEL_MODIFIED_MIDPOINT:
                 //     // code
                 //     break;
