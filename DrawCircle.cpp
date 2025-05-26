@@ -16,6 +16,14 @@ void Draw8Points(HDC hdc, int xc, int yc, int x, int y, COLORREF color) {
 
 // Osama use Draw8Points above
 void DrawCircleDirect(HDC hdc, int xc, int yc, int r, COLORREF color) {
+    int x = 0, y = r;
+    int R = r*r;
+    Draw8Points(hdc,xc,yc,x,y,color);
+    while (x < y){
+        x++;
+        y = round(sqrt((double) R - x *x ));
+        Draw8Points(hdc,xc,yc,x,y,color);
+    }
 
 }
 

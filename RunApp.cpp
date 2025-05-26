@@ -184,9 +184,12 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 case LINE_PARAMETRIC:
                     DrawLineParametric(hdc, startPoint.x, startPoint.y, x2, y2, currColor);
                     break;
-                // case CIRCLE_DIRECT:
-                //     // code
-                //     break;
+                 case CIRCLE_DIRECT: {
+                     int R = (int) sqrt(
+                             (x2 - startPoint.x) * (x2 - startPoint.x) + (y2 - startPoint.y) * (y2 - startPoint.y));
+                     DrawCircleDirect(hdc,startPoint.x,startPoint.y,R,currColor);
+                     break;
+                 }
                 case CIRCLE_POLAR: {
                     int R = (int) sqrt(
                         (x2 - startPoint.x) * (x2 - startPoint.x) + (y2 - startPoint.y) * (y2 - startPoint.y));
@@ -231,9 +234,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 // case FILL_NONCONVEX:
                 //     // code
                 //     break;
-                // case FLOOD_FILL_RECURSIVE:
-                //     // code
-                //     break;
+                 case FLOOD_FILL_RECURSIVE: {
+//                     COLORREF c = GetPixel(hdc,startPoint.x,startPoint.y);
+//                     RecursiveFloodFill(hdc,startPoint.x,startPoint.y,c,currColor);
+                     break;
+                 }
                 case FLOOD_FILL_NONRECURSIVE:
                     NonRecursiveFloodFill(hdc, startPoint.x, startPoint.y, currColor, currColor);
                     break;
