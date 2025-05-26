@@ -12,6 +12,7 @@ void Draw8Points(HDC hdc, int xc, int yc, int x, int y, COLORREF color) {
     SetPixel(hdc, xc - y, yc - x, color);
 }
 
+// -------------------------------------------
 
 // Osama use Draw8Points above
 void DrawCircleDirect(HDC hdc, int xc, int yc, int r, COLORREF color) {
