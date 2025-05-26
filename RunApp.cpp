@@ -204,9 +204,13 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     break;
                 }
 
-                // case CIRCLE_ITERATIVE_POLAR:
-                //     // code
-                //     break;
+                case CIRCLE_ITERATIVE_POLAR:{
+                    int R = (int) sqrt(
+                        (x2 - startPoint.x) * (x2 - startPoint.x) + (y2 - startPoint.y) * (y2 - startPoint.y));
+                    DrawCircleIterativePolar(hdc, startPoint.x, startPoint.y, R, currColor);
+                    break;
+                }
+                    
                 case CIRCLE_MIDPOINT: {
                     int R = (int) sqrt(
                         (x2 - startPoint.x) * (x2 - startPoint.x) + (y2 - startPoint.y) * (y2 - startPoint.y));
