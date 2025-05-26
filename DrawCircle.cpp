@@ -37,8 +37,19 @@ void DrawCirclePolar(HDC hdc, int xc, int yc, int r , COLORREF color){
 // -------------------------------------------
 
 // Mohamed Gamal
-void DrawCircleIterativePolar(HDC hdc, int xc, int yc, int r){
-
+void DrawCircleIterativePolar(HDC hdc, int xc, int yc, int r , COLORREF color){
+    double x = r , y = 0 ; 
+    double dtheta = 1.0 / r ; 
+    double cdtheta = cos(dtheta);
+    double sdtheta = sin(dtheta);
+    Draw8Points(hdc, xc, yc, x, y, color);
+    while (x > y){
+        double x1 = x * cdtheta - y * sdtheta ; 
+        double y1 = x * sdtheta + y * cdtheta ; 
+        x = x1 ; 
+        y = y1 ; 
+        Draw8Points(hdc, xc, yc, round(x), round(y), color);
+    }
 }
 
 // -------------------------------------------
