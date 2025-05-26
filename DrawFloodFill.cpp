@@ -3,7 +3,13 @@
 
 // Osama
 void RecursiveFloodFill(HDC hdc ,int x, int y, COLORREF oldColor, COLORREF newColor){
-
+//    COLORREF c = GetPixel(hdc,x,y);
+//    if(c != oldColor || c == newColor ) return;
+//    SetPixel(hdc,x,y,newColor);
+//    RecursiveFloodFill(hdc,x+1,y,oldColor,newColor);
+//    RecursiveFloodFill(hdc,x,y+1,oldColor,newColor);
+//    RecursiveFloodFill(hdc,x-1,y,oldColor,newColor);
+//    RecursiveFloodFill(hdc,x,y-1,oldColor,newColor);
 }
 
 // -------------------------------------------
