@@ -65,6 +65,23 @@ void DrawCircleMidpoint(HDC hdc, int xc, int yc, int r, COLORREF color) {
 // -------------------------------------------
 
 // Ahmed Mohsen -> use Draw8Points above
-void DrawCircleModifiedMidpoint(HDC hdc, int xc, int yc, int r){
-
+void DrawCircleModifiedMidpoint(HDC hdc, int xc, int yc, int r ,COLORREF c) {
+    int x = 0, y = r, d = 1 - r;
+    int d1 = 3, d2 = 5 - 2 * r;
+    Draw8Points(hdc, xc, yc, x, y, c);
+    while (x < y) {
+        if (d < 0) {
+            d += d1;
+            d1 += 2;
+            d2 += 2;
+            x++;
+        } else {
+            d += d2;
+            d1 += 2;
+            d2 += 4;
+            x++;
+            y--;
+        }
+        Draw8Points(hdc, xc, yc, x, y, c);
+    }
 }
