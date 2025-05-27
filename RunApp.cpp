@@ -126,6 +126,8 @@ void creatDrawingMenu(HWND hwnd) {
     SetMenu(hwnd, hMenu);
 }
 
+PolygonPoint points[6];
+int p_index = 0;
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
         case WM_CREATE:
@@ -235,9 +237,16 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 // case FILL_CONVEX:
                 //     // code
                 //     break;
-                // case FILL_NONCONVEX:
-                //     // code
-                //     break;
+                 case FILL_NONCONVEX: {
+                     points[p_index].x = x2;
+                     points[p_index].y = y2;
+                     p_index++;
+                     if(p_index == 6){
+                         NonConvexFilling(hdc,points,p_index,RGB(255,0,0));
+                         p_index = 0;
+                     }
+                     break;
+                 }
                  case FLOOD_FILL_RECURSIVE: {
 //                     COLORREF c = GetPixel(hdc,startPoint.x,startPoint.y);
 //                     RecursiveFloodFill(hdc,startPoint.x,startPoint.y,c,currColor);
