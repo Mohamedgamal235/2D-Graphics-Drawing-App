@@ -6,6 +6,8 @@
 #include "DrawFloodFill.cpp"
 #include "DrawSpline.cpp"
 #include "DrawWindow.cpp"
+#include "DrawPolygonClipping.cpp"
+
 using namespace std;
 
 enum DrawShap {
@@ -206,7 +208,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             startPoint.x = LOWORD(lParam);
             startPoint.y = HIWORD(lParam);
             
-            if (currShape == FILL_CONVEX || currShape == FILL_NONCONVEX) {
+            if (currShape == FILL_CONVEX || currShape == FILL_NONCONVEX  || currShape == CLIP_POLYGON_RECT) {
                 HDC hdc = GetDC(hwnd);
                 DrawPoint(hdc, startPoint.x, startPoint.y, currColor);
                 ReleaseDC(hwnd, hdc);
@@ -324,19 +326,26 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                         int a = abs(x2 - startPoint.x) / 2;  // horizontal radius
                         int b = abs(y2 - startPoint.y) / 2;  // vertical radius
                         DrawEllipseMidpoint(hdc, xc, yc, a, b, currColor);
-                    }
-                    break;
+                        break;
+                    }  
                 // case CLIP_POINT_RECT:
                 //     // code
                 //     break;
                  case CLIP_LINE_RECT: {
-                     ClipLineRectangle(hdc,startPoint.x,startPoint.y,x2,y2,200,800,100,300);
+                     ClipLineRectangle(hdc,startPoint.x,startPoint.y,x2,y2,200, 100, 800, 300);
                     }
                     break;
 
-                // case CLIP_POLYGON_RECT:
-                //     // code
-                //     break;
+                case CLIP_POLYGON_RECT: {
+                    points[p_index].x = x2;
+                    points[p_index].y = y2;
+                    p_index++;
+                    if (p_index == 6) {
+                        ClipPolygonRectangle(hdc, (Vertex*)points, p_index, 200, 100, 800, 300);
+                        p_index = 0;
+                    }
+                    break;
+                }
                 // case CLIP_POINT_SQUARE:
                 //     // code
                 //     break;
