@@ -1,3 +1,0 @@
-D:/work/FCAI/Third year/Second semester/Computer Graphics/Project/cmake-build-debug/CMakeFiles/2D_Drawing_App.dir
-D:/work/FCAI/Third year/Second semester/Computer Graphics/Project/cmake-build-debug/CMakeFiles/edit_cache.dir
-D:/work/FCAI/Third year/Second semester/Computer Graphics/Project/cmake-build-debug/CMakeFiles/rebuild_cache.dir
