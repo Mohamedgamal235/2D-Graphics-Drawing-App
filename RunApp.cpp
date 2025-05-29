@@ -248,8 +248,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                      break;
                  }
                  case FLOOD_FILL_RECURSIVE: {
-//                     COLORREF c = GetPixel(hdc,startPoint.x,startPoint.y);
-//                     RecursiveFloodFill(hdc,startPoint.x,startPoint.y,c,currColor);
+                     COLORREF c = GetPixel(hdc,startPoint.x,startPoint.y);
+                     RecursiveFloodFill(hdc,startPoint.x,startPoint.y,c,currColor);
                      break;
                  }
                 case FLOOD_FILL_NONRECURSIVE:
@@ -270,9 +270,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 // case CLIP_POINT_RECT:
                 //     // code
                 //     break;
-                // case CLIP_LINE_RECT:
-                //     // code
-                //     break;
+                 case CLIP_LINE_RECT: {
+                     ClipLineRectangle(hdc,startPoint.x,startPoint.y,x2,y2,200,800,100,300);
+                     break;
+                 }
                 // case CLIP_POLYGON_RECT:
                 //     // code
                 //     break;

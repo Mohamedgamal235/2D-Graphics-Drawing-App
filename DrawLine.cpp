@@ -67,5 +67,13 @@ void DrawLineMidpoint(HDC hdc, int x1, int y1, int x2, int y2, COLORREF c) {
 
 // Osama
 void DrawLineParametric(HDC hdc , int x1, int y1, int x2, int y2 , COLORREF c){
-
+    int x,y;
+    int dx = x2 - x1;
+    int dy = y2 - y1;
+    double step = 1.0 / max(abs(dx),abs(dy));
+    for (double i = 0; i < 1.0; i+=step) {
+        x = dx * i + x1;
+        y = dy * i + y1;
+        SetPixel(hdc,x,y,c);
+    }
 }
