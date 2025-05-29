@@ -4,7 +4,6 @@
 #include "DrawEllips.cpp"
 #include "DrawFilling.cpp"
 #include "DrawFloodFill.cpp"
-#include "DrawLine.cpp"
 #include "DrawSpline.cpp"
 using namespace std;
 
