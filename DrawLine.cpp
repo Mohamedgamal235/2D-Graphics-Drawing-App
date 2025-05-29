@@ -1,12 +1,13 @@
 #include <windows.h>
 #include <bits/stdc++.h>
+using namespace std ;
 
 // Ahmed Mohsen
 void DrawLineDDA(HDC hdc, int x1, int y1, int x2, int y2, COLORREF c) {
     int dx = x2 - x1;
     int dy = y2 - y1;
 
-    int steps = std::max(abs(dx), abs(dy));
+    int steps = max(abs(dx), abs(dy));
     if (steps == 0) {
         SetPixel(hdc, x1, y1, c); // Single point
         return;
