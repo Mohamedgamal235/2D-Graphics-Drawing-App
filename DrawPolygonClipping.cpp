@@ -69,6 +69,7 @@ void ClipPolygonRectangle(HDC hdc  , Vertex *p , int n , int xleft , int ytop , 
     VertexList plist ;
     for (int i = 0 ; i < n ; i++)
         plist.push_back(Vertex(p[i].x , p[i].y));
+    
     plist = ClipWithEdge(plist , xleft , IsLeft , VIntersection);
     plist = ClipWithEdge(plist , ytop , IsTop , HIntersection);
     plist = ClipWithEdge(plist , xright , IsRight , VIntersection);
