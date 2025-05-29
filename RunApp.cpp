@@ -43,9 +43,7 @@ enum DrawShap {
     LOAD_SCREEN
 };
 
-struct Point {
-    int x, y;
-};
+
 
 Point startPoint;
 DrawShap currShape = NONE;
@@ -127,11 +125,43 @@ void creatDrawingMenu(HWND hwnd) {
 
 PolygonPoint points[6];
 int p_index = 0;
+Point points2[5];
+
+// Add this function to draw points
+void DrawPoint(HDC hdc, int x, int y, COLORREF color) {
+    HBRUSH hBrush = CreateSolidBrush(color);
+    HBRUSH oldBrush = (HBRUSH)SelectObject(hdc, hBrush);
+    Ellipse(hdc, x - 5, y - 5, x + 5, y + 5);
+    SelectObject(hdc, oldBrush);
+    DeleteObject(hBrush);
+}
+
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
         case WM_CREATE:
             creatDrawingMenu(hwnd);
             break;
+
+        case WM_PAINT: {
+            PAINTSTRUCT ps;
+            HDC hdc = BeginPaint(hwnd, &ps);
+            
+            // Draw existing points for convex filling
+            if (currShape == FILL_CONVEX) {
+                for (int i = 0; i < p_index; i++) {
+                    DrawPoint(hdc, points2[i].x, points2[i].y, currColor);
+                }
+            }
+            // Draw existing points for non-convex filling
+            else if (currShape == FILL_NONCONVEX) {
+                for (int i = 0; i < p_index; i++) {
+                    DrawPoint(hdc, points[i].x, points[i].y, currColor);
+                }
+            }
+            
+            EndPaint(hwnd, &ps);
+            break;
+        }
 
         case WM_COMMAND: {
             DrawShap cmd = (DrawShap) (LOWORD(wParam));
@@ -161,13 +191,19 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             break;
         }
 
-        case WM_LBUTTONDOWN:
-            // ممكن نعمل هنا سويتش بس لسه بفكر فيها تتعمل ازاي ممكن تكتب كود عادي
-            // وابقي غير الحته دي اول ما يعمل رن معاك رجعها مكانها بعد اذنك
+        case WM_LBUTTONDOWN: {
             startPoint.x = LOWORD(lParam);
             startPoint.y = HIWORD(lParam);
+            
+            if (currShape == FILL_CONVEX || currShape == FILL_NONCONVEX) {
+                HDC hdc = GetDC(hwnd);
+                DrawPoint(hdc, startPoint.x, startPoint.y, currColor);
+                ReleaseDC(hwnd, hdc);
+            }
+            
             isDrawing = true;
             break;
+        }
 
         case WM_LBUTTONUP: {
             if (!isDrawing) break;
@@ -200,7 +236,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 case CIRCEL_MODIFIED_MIDPOINT: {
                     int R = (int) sqrt(
                         (x2 - startPoint.x) * (x2 - startPoint.x) + (y2 - startPoint.y) * (y2 - startPoint.y));
-
                     DrawCircleModifiedMidpoint(hdc, startPoint.x, startPoint.y, R, currColor);
                     break;
                 }
@@ -218,9 +253,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     DrawCircleMidpoint(hdc, startPoint.x, startPoint.y, R, currColor);
                     break;
                 }
-                // case CIRCEL_MODIFIED_MIDPOINT:
-                //     // code
-                //     break;
                 // case FILL_CIRCLE_WITH_LINE:
                 //     // code
                 //     break;
@@ -233,15 +265,22 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 // case FILL_BEZIER:
                 //     // code
                 //     break;
-                // case FILL_CONVEX:
-                //     // code
-                //     break;
+                case FILL_CONVEX: {
+                    points2[p_index].x = x2;
+                    points2[p_index].y = y2;
+                    p_index++;
+                    if (p_index == 5) {
+                        ConvexFilling(hdc, points2, p_index, currColor);
+                        p_index = 0;
+                    }
+                    break;
+                }
                  case FILL_NONCONVEX: {
                      points[p_index].x = x2;
                      points[p_index].y = y2;
                      p_index++;
-                     if(p_index == 6){
-                         NonConvexFilling(hdc,points,p_index,RGB(255,0,0));
+                     if (p_index == 6) {
+                         NonConvexFilling(hdc, points, p_index, currColor);
                          p_index = 0;
                      }
                      break;
@@ -257,15 +296,25 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 // case SPLINE_CARDINAL:
                 //     // code
                 //     break;
-                // case ELLIPSE_DIRECT:
-                //     // code
-                //     break;
-                // case ELLIPSE_POLAR:
-                //     // code
-                //     break;
-                // case ELLIPSE_MIDPOINT:
-                //     // code
-                //     break;
+                case ELLIPSE_DIRECT:
+                    DrawEllipseDirect(hdc, startPoint.x, startPoint.y, x2, y2, currColor);
+                    break;
+                case ELLIPSE_POLAR:{
+                        int xc = (startPoint.x + x2) / 2;
+                        int yc = (startPoint.y + y2) / 2;
+                        int a = abs(x2 - startPoint.x) / 2;  // horizontal radius
+                        int b = abs(y2 - startPoint.y) / 2;  // vertical radius
+                        DrawEllipsePolar(hdc, xc, yc, a, b, currColor);
+                    }
+                    break;
+                case ELLIPSE_MIDPOINT: {
+                        int xc = (startPoint.x + x2) / 2;
+                        int yc = (startPoint.y + y2) / 2;
+                        int a = abs(x2 - startPoint.x) / 2;  // horizontal radius
+                        int b = abs(y2 - startPoint.y) / 2;  // vertical radius
+                        DrawEllipseMidpoint(hdc, xc, yc, a, b, currColor);
+                    }
+                    break;
                 // case CLIP_POINT_RECT:
                 //     // code
                 //     break;
@@ -328,3 +377,4 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
 
     return 0;
 }
+    
