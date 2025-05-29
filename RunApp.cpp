@@ -1,10 +1,11 @@
 #include <windows.h>
 #include "DrawCircle.cpp"
-#include "DrawClipping.cpp"
+#include "DrawLineClipping.cpp"
 #include "DrawEllips.cpp"
 #include "DrawFilling.cpp"
 #include "DrawFloodFill.cpp"
 #include "DrawSpline.cpp"
+#include "DrawWindow.cpp"
 using namespace std;
 
 enum DrawShap {
@@ -187,6 +188,16 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             // }
             else {
                 currShape = cmd;
+                if (cmd == CLIP_LINE_RECT || cmd == CLIP_POINT_RECT || cmd == CLIP_POLYGON_RECT){
+                    HDC hdc = GetDC(hwnd);
+                    DrawRectungle(hdc, 200, 100, 800, 300);
+                    ReleaseDC(hwnd, hdc);
+                }
+                else if (cmd == CLIP_LINE_SQUARE || cmd == CLIP_POINT_SQUARE){
+                    HDC hdc = GetDC(hwnd);
+                    DrawSquare(hdc, 200, 200 , 300);
+                    ReleaseDC(hwnd, hdc);
+                }
             }
             break;
         }
@@ -320,8 +331,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 //     break;
                  case CLIP_LINE_RECT: {
                      ClipLineRectangle(hdc,startPoint.x,startPoint.y,x2,y2,200,800,100,300);
-                     break;
-                 }
+                    }
+                    break;
+
                 // case CLIP_POLYGON_RECT:
                 //     // code
                 //     break;
