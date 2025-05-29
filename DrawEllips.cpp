@@ -40,7 +40,7 @@ void DrawEllipseDirect(HDC hdc, int x1, int y1, int x2, int y2, COLORREF c) {
 // -------------------------------------------
 
 // Ahmed Mohsen
-void DrawEllipsePolar(HDC hdc){
+void DrawEllipsePolar(HDC hdc , int x1 , int y1 , int x2 , int y2 , COLORREF c){
 
 }
 
