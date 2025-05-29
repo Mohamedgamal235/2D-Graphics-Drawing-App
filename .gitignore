@@ -83,3 +83,4 @@ Win32/
 # Backup files
 *~
 *.bak
+cmake-build-debug/
