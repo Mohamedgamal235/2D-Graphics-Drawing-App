@@ -38,6 +38,21 @@ CMakeCache.txt
 cmake_install.cmake
 Makefile
 
+build/
+builds/
+
+# CMake cache and files
+*.cmake
+
+# CMake generated files
+CTestTestfile.cmake
+Testing/
+CPackConfig.cmake
+CPackSourceConfig.cmake
+
+# IDE specific CMake files
+.cmake/
+
 # IDE specific files
 .idea/
 .vs/
