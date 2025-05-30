@@ -7,7 +7,7 @@
 #include "DrawSpline.cpp"
 #include "DrawWindow.cpp"
 #include "DrawPolygonClipping.cpp"
-
+#include "DrawPointClipping.cpp"
 using namespace std;
 
 enum DrawShap {
@@ -195,7 +195,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     DrawRectungle(hdc, 200, 100, 800, 300);
                     ReleaseDC(hwnd, hdc);
                 }
-                else if (cmd == CLIP_LINE_SQUARE || cmd == CLIP_POINT_SQUARE){
+                else if (cmd == CLIP_LINE_SQUARE || cmd == CLIP_POINT_SQUARE || cmd == CLIP_POINT_SQUARE){
                     HDC hdc = GetDC(hwnd);
                     DrawSquare(hdc, 200, 200 , 300);
                     ReleaseDC(hwnd, hdc);
@@ -349,6 +349,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                         ClipPolygonRectangle(hdc, points3, p_index, 200, 100, 800, 300);
                         p_index = 0 ;
                     }
+                }
+                case CLIP_POINT_SQUARE: {
+                    int pointRadius =5;
+                    ClipPointSquare(hdc,startPoint.x,startPoint.y,200,200,500,500,currColor,pointRadius);
                 }
                     break;
 
