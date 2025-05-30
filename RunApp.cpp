@@ -182,12 +182,12 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             } else if (cmd == CLEAR_SCREEN) {
                 InvalidateRect(hwnd, NULL, TRUE);
             }
-            // else if (cmd == SAVE_SCREEN) {
-            //
-            // }
-            // else if (cmd == LOAD_SCREEN) {
-            //
-            // }
+            else if (cmd == SAVE_SCREEN) {
+            
+            }
+            else if (cmd == LOAD_SCREEN) {
+            
+            }
             else {
                 currShape = cmd;
                 if (cmd == CLIP_LINE_RECT || cmd == CLIP_POINT_RECT || cmd == CLIP_POLYGON_RECT){
