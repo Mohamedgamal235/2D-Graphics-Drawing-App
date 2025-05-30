@@ -74,7 +74,6 @@ void ClipLineRectangle(HDC hdc, int xs, int ys, int xe, int ye,int xleft , int y
 
 
 // Mohamed Gamal
-void ClipLineSquare(HDC hdc){
-
-
+void ClipLineSquare(HDC hdc , int xs , int ys , int xe , int ye , int xleft , int ytop , int xright , int ybottom){
+    ClipLineRectangle(hdc , xs , ys , xe , ye , xleft , ytop , xright , ybottom);
 }

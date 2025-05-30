@@ -270,6 +270,23 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     DrawCircleModifiedMidpoint(hdc, startPoint.x, startPoint.y, R, currColor);
                     break;
                 }
+
+                case FILL_CIRCLE_WITH_LINE:
+                    // code
+                    break;
+
+                case FILL_CIRCLE_WITH_CIRCLE:
+                    // code
+                    break;
+
+                case FILL_HERMITE:
+                    // code
+                    break;
+
+                case FILL_BEZIER:
+                    // code
+                        break;
+
                 case FILL_CONVEX: {
                     points2[p_index].x = x2;
                     points2[p_index].y = y2;
@@ -319,6 +336,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     }
                 case CLIP_LINE_RECT:
                     ClipLineRectangle(hdc, startPoint.x, startPoint.y, x2, y2, 200, 100, 800, 300);
+                    break;
+
+                case CLIP_LINE_SQUARE:
+                    ClipLineSquare(hdc , startPoint.x , startPoint.y , x2 , y2 ,200 , 200 , 500 , 500);
                     break;
 
                 case CLIP_POLYGON_RECT: {
