@@ -129,15 +129,17 @@ void creatDrawingMenu(HWND hwnd) {
 PolygonPoint points[6];
 int p_index = 0;
 Point points2[5];
+Vertex points3[6] = {Vertex(0,0), Vertex(0,0), Vertex(0,0), Vertex(0,0), Vertex(0,0), Vertex(0,0)};
 
-// Add this function to draw points
+
 void DrawPoint(HDC hdc, int x, int y, COLORREF color) {
     HBRUSH hBrush = CreateSolidBrush(color);
     HBRUSH oldBrush = (HBRUSH)SelectObject(hdc, hBrush);
-    Ellipse(hdc, x - 5, y - 5, x + 5, y + 5);
+    Ellipse(hdc, x - 2, y - 2, x + 2, y + 2);
     SelectObject(hdc, oldBrush);
     DeleteObject(hBrush);
 }
+
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
@@ -149,13 +151,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hwnd, &ps);
             
-            // Draw existing points for convex filling
             if (currShape == FILL_CONVEX) {
                 for (int i = 0; i < p_index; i++) {
                     DrawPoint(hdc, points2[i].x, points2[i].y, currColor);
                 }
             }
-            // Draw existing points for non-convex filling
             else if (currShape == FILL_NONCONVEX) {
                 for (int i = 0; i < p_index; i++) {
                     DrawPoint(hdc, points[i].x, points[i].y, currColor);
@@ -208,12 +208,18 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             startPoint.x = LOWORD(lParam);
             startPoint.y = HIWORD(lParam);
             
-            if (currShape == FILL_CONVEX || currShape == FILL_NONCONVEX  || currShape == CLIP_POLYGON_RECT) {
+            if (currShape == FILL_CONVEX || currShape == FILL_NONCONVEX) {
                 HDC hdc = GetDC(hwnd);
                 DrawPoint(hdc, startPoint.x, startPoint.y, currColor);
                 ReleaseDC(hwnd, hdc);
             }
-            
+            else if (currShape == CLIP_POLYGON_RECT) {
+                HDC hdc = GetDC(hwnd);
+                DrawPoint(hdc, startPoint.x, startPoint.y, RGB(0, 0, 0));
+                p_index++;
+                ReleaseDC(hwnd, hdc);
+            }
+
             isDrawing = true;
             break;
         }
@@ -234,16 +240,28 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 case LINE_PARAMETRIC:
                     DrawLineParametric(hdc, startPoint.x, startPoint.y, x2, y2, currColor);
                     break;
-                 case CIRCLE_DIRECT: {
-                     int R = (int) sqrt(
-                             (x2 - startPoint.x) * (x2 - startPoint.x) + (y2 - startPoint.y) * (y2 - startPoint.y));
-                     DrawCircleDirect(hdc,startPoint.x,startPoint.y,R,currColor);
-                     break;
-                 }
+                case CIRCLE_DIRECT: {
+                    int R = (int) sqrt(
+                            (x2 - startPoint.x) * (x2 - startPoint.x) + (y2 - startPoint.y) * (y2 - startPoint.y));
+                    DrawCircleDirect(hdc,startPoint.x,startPoint.y,R,currColor);
+                    break;
+                }
                 case CIRCLE_POLAR: {
                     int R = (int) sqrt(
                         (x2 - startPoint.x) * (x2 - startPoint.x) + (y2 - startPoint.y) * (y2 - startPoint.y));
                     DrawCirclePolar(hdc, startPoint.x, startPoint.y, R, currColor);
+                    break;
+                }
+                case CIRCLE_ITERATIVE_POLAR:{
+                    int R = (int) sqrt(
+                        (x2 - startPoint.x) * (x2 - startPoint.x) + (y2 - startPoint.y) * (y2 - startPoint.y));
+                    DrawCircleIterativePolar(hdc, startPoint.x, startPoint.y, R, currColor);
+                    break;
+                }
+                case CIRCLE_MIDPOINT: {
+                    int R = (int) sqrt(
+                        (x2 - startPoint.x) * (x2 - startPoint.x) + (y2 - startPoint.y) * (y2 - startPoint.y));
+                    DrawCircleMidpoint(hdc, startPoint.x, startPoint.y, R, currColor);
                     break;
                 }
                 case CIRCEL_MODIFIED_MIDPOINT: {
@@ -252,32 +270,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     DrawCircleModifiedMidpoint(hdc, startPoint.x, startPoint.y, R, currColor);
                     break;
                 }
-
-                case CIRCLE_ITERATIVE_POLAR:{
-                    int R = (int) sqrt(
-                        (x2 - startPoint.x) * (x2 - startPoint.x) + (y2 - startPoint.y) * (y2 - startPoint.y));
-                    DrawCircleIterativePolar(hdc, startPoint.x, startPoint.y, R, currColor);
-                    break;
-                }
-                    
-                case CIRCLE_MIDPOINT: {
-                    int R = (int) sqrt(
-                        (x2 - startPoint.x) * (x2 - startPoint.x) + (y2 - startPoint.y) * (y2 - startPoint.y));
-                    DrawCircleMidpoint(hdc, startPoint.x, startPoint.y, R, currColor);
-                    break;
-                }
-                // case FILL_CIRCLE_WITH_LINE:
-                //     // code
-                //     break;
-                // case FILL_CIRCLE_WITH_CIRCLE:
-                //     // code
-                //     break;
-                // case FILL_HERMITE:
-                //     // code
-                //     break;
-                // case FILL_BEZIER:
-                //     // code
-                //     break;
                 case FILL_CONVEX: {
                     points2[p_index].x = x2;
                     points2[p_index].y = y2;
@@ -288,27 +280,24 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     }
                     break;
                 }
-                 case FILL_NONCONVEX: {
-                     points[p_index].x = x2;
-                     points[p_index].y = y2;
-                     p_index++;
-                     if (p_index == 6) {
-                         NonConvexFilling(hdc, points, p_index, currColor);
-                         p_index = 0;
-                     }
-                     break;
-                 }
-                 case FLOOD_FILL_RECURSIVE: {
-                     COLORREF c = GetPixel(hdc,startPoint.x,startPoint.y);
-                     RecursiveFloodFill(hdc,startPoint.x,startPoint.y,c,currColor);
-                     break;
-                 }
+                case FILL_NONCONVEX: {
+                    points[p_index].x = x2;
+                    points[p_index].y = y2;
+                    p_index++;
+                    if (p_index == 6) {
+                        NonConvexFilling(hdc, points, p_index, currColor);
+                        p_index = 0;
+                    }
+                    break;
+                }
+                case FLOOD_FILL_RECURSIVE: {
+                    COLORREF c = GetPixel(hdc,startPoint.x,startPoint.y);
+                    RecursiveFloodFill(hdc,startPoint.x,startPoint.y,c,currColor);
+                    break;
+                }
                 case FLOOD_FILL_NONRECURSIVE:
                     NonRecursiveFloodFill(hdc, startPoint.x, startPoint.y, currColor, currColor);
                     break;
-                // case SPLINE_CARDINAL:
-                //     // code
-                //     break;
                 case ELLIPSE_DIRECT:
                     DrawEllipseDirect(hdc, startPoint.x, startPoint.y, x2, y2, currColor);
                     break;
@@ -327,31 +316,21 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                         int b = abs(y2 - startPoint.y) / 2;  // vertical radius
                         DrawEllipseMidpoint(hdc, xc, yc, a, b, currColor);
                         break;
-                    }  
-                // case CLIP_POINT_RECT:
-                //     // code
-                //     break;
-                 case CLIP_LINE_RECT: {
-                     ClipLineRectangle(hdc,startPoint.x,startPoint.y,x2,y2,200, 100, 800, 300);
                     }
+                case CLIP_LINE_RECT:
+                    ClipLineRectangle(hdc, startPoint.x, startPoint.y, x2, y2, 200, 100, 800, 300);
                     break;
 
                 case CLIP_POLYGON_RECT: {
-                    points[p_index].x = x2;
-                    points[p_index].y = y2;
-                    p_index++;
-                    if (p_index == 6) {
-                        ClipPolygonRectangle(hdc, (Vertex*)points, p_index, 200, 100, 800, 300);
-                        p_index = 0;
+                    points3[p_index].x = (double)x2 ;
+                    points3[p_index].y = (double)y2 ;
+                    if(p_index == 6) {
+                        ClipPolygonRectangle(hdc, points3, p_index, 200, 100, 800, 300);
+                        p_index = 0 ;
                     }
-                    break;
                 }
-                // case CLIP_POINT_SQUARE:
-                //     // code
-                //     break;
-                // case CLIP_LINE_SQUARE:
-                //     // code
-                //     break;
+                    break;
+
                 default:
                     break;
             }

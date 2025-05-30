@@ -64,8 +64,23 @@ VertexList ClipWithEdge(VertexList p , int edge , IsIn In , GetIntersectionFunc 
     return outList ; 
 }
 
-// Mohamed Gamal
-void ClipPolygonRectangle(HDC hdc  , Vertex *p , int n , int xleft , int ytop , int xright , int ybottom){
+void DrawPolygon(HDC hdc , VertexList p , COLORREF color){
+    if (p.size() < 2) return ; 
+
+    HPEN pen = CreatePen(PS_SOLID , 2 , color);
+    HPEN oldPen = (HPEN)SelectObject(hdc , pen);
+
+    MoveToEx(hdc , (int)p[0].x , (int)p[0].y , NULL);
+    for (int i = 1 ; i < p.size() ; i++)
+        LineTo(hdc , (int)p[i].x , (int)p[i].y);
+
+    LineTo(hdc , (int)p[0].x , (int)p[0].y);
+
+    SelectObject(hdc, oldPen);
+    DeleteObject(pen);
+}
+
+void ClipPolygonRectangle(HDC hdc  , Vertex p[] , int n , int xleft , int ytop , int xright , int ybottom){
     VertexList plist ;
     for (int i = 0 ; i < n ; i++)
         plist.push_back(Vertex(p[i].x , p[i].y));
@@ -75,12 +90,6 @@ void ClipPolygonRectangle(HDC hdc  , Vertex *p , int n , int xleft , int ytop , 
     plist = ClipWithEdge(plist , xright , IsRight , VIntersection);
     plist = ClipWithEdge(plist , ybottom , IsBottom , HIntersection);
     
-    Vertex v1 = plist[plist.size() - 1];
-    for (int i = 0 ; i < plist.size() ; i++){
-        Vertex v2 = plist[i];
-        MoveToEx(hdc , v1.x , v1.y , NULL);
-        LineTo(hdc , v2.x , v2.y);
-        v1 = v2 ; 
-    }
+    DrawPolygon(hdc , plist , RGB(255 , 0 , 0));
 }
 
