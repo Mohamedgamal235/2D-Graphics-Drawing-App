@@ -1,5 +1,6 @@
 #include <windows.h>
 #include <list>
+#include <cmath>
 using namespace std;
 
 struct Point {
