@@ -15,4 +15,5 @@ add_executable(2D_Drawing_App
     DrawPointClipping.cpp
     DrawLineClipping.cpp
     DrawSpline.cpp
+        DrawFillingCircle.cpp
 )

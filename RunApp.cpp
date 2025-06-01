@@ -60,6 +60,12 @@ int cir_r = 0 ;
 int cir_x = 0 ;
 int cir_y  = 0 ; 
 
+// Add these variables after the other global variables
+int clipCircleX = 0;
+int clipCircleY = 0;
+int clipCircleR = 0;
+bool clipCircleDrawn = false;
+
 // --------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------
 
@@ -188,6 +194,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 }
             } else if (cmd == CLEAR_SCREEN) {
                 InvalidateRect(hwnd, NULL, TRUE);
+                clipCircleDrawn = false;
+                circleisDrawn = false;
             }
             else if (cmd == SAVE_SCREEN) {
             
@@ -207,8 +215,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     DrawSquare(hdc, 200, 200 , 300);
                     ReleaseDC(hwnd, hdc);
                 }
-                // Reset circle state when selecting Fill Circle With Lines
-                if (cmd == FILL_CIRCLE_WITH_LINE) {
+                // Reset states when selecting circle filling options
+                if (cmd == FILL_CIRCLE_WITH_LINE || cmd == FILL_CIRCLE_WITH_CIRCLE) {
+                    clipCircleDrawn = false;
                     circleisDrawn = false;
                 }
             }
@@ -284,36 +293,36 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
                 case FILL_CIRCLE_WITH_LINE: {
                     if (!circleisDrawn) {
-                        // First click - draw the circle
+                        // Second click - draw the circle to be filled
                         cir_r = (int)sqrt((x2 - startPoint.x) * (x2 - startPoint.x) + 
-                                         (y2 - startPoint.y) * (y2 - startPoint.y));
+                                       (y2 - startPoint.y) * (y2 - startPoint.y));
                         cir_x = startPoint.x;
                         cir_y = startPoint.y;
                         DrawCircleMidpoint(hdc, cir_x, cir_y, cir_r, currColor);
                         circleisDrawn = true;
                     }
                     else {
-                        // Second click - determine quarter and fill
                         int quarter = 0;
                         if (x2 >= cir_x && y2 <= cir_y) 
-                            quarter = 1;      // Top Right
+                            quarter = 1;
                         else if (x2 < cir_x && y2 <= cir_y) 
-                            quarter = 2;      // Top Left
+                            quarter = 2;
                         else if (x2 < cir_x && y2 > cir_y) 
-                            quarter = 3;      // Bottom Left
+                            quarter = 3;
                         else if (x2 >= cir_x && y2 > cir_y) 
-                            quarter = 4;      // Bottom Right
+                            quarter = 4;
                         
-                        if (quarter > 0) {
-                            FillCircleWithLines(hdc, cir_x, cir_y, cir_r, quarter, currColor);
-                        }
+                        if (quarter > 0)
+                            FillCircleWithLines(hdc, cir_x, cir_y, cir_r, quarter, currColor, clipCircleX, clipCircleY, clipCircleR);
+
                     }
                     break;
                 }
 
-                case FILL_CIRCLE_WITH_CIRCLE:
-                    // code
+                case FILL_CIRCLE_WITH_CIRCLE: {
+
                     break;
+                }
 
                 case FILL_HERMITE:
                     // code
