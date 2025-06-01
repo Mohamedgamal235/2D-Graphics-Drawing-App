@@ -14,10 +14,14 @@ struct PolygonPoint {
     PolygonPoint(int x = 0, int y = 0) : x(x), y(y) {}
 };
 
-// Updated function declarations with clipping circle parameters
-void FillCircleWithLines(HDC hdc, int xc, int yc, int r, int quarter, COLORREF color, int clipXc, int clipYc, int clipR);
+// Helper function for circle clipping
+bool IsPointInsideClippingCircle(int x, int y, int clipXc, int clipYc, int clipR);
+
+// Circle filling functions with clipping
+void FillCircleWithLines(HDC hdc, int xc, int yc, int r, int quarter, COLORREF color);
 void FillCircleWithCircles(HDC hdc, int xc, int yc, int r, int quarter, int clipXc, int clipYc, int clipR);
 
+// Other filling functions
 void FillSquareWithHermite(HDC hdc);
 void FillRectangleWithBezier(HDC hdc);
 void ConvexFilling(HDC hdc, Point p[], int n, COLORREF color);

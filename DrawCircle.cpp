@@ -106,3 +106,8 @@ void DrawCircleModifiedMidpoint(HDC hdc, int xc, int yc, int r ,COLORREF c) {
         Draw8Points(hdc, xc, yc, x, y, c);
     }
 }
+
+// Function to draw the clipping circle using the midpoint algorithm
+void DrawClippingCircle(HDC hdc, int xc, int yc, int r, COLORREF color) {
+    DrawCircleMidpoint(hdc, xc, yc, r, color);
+}
