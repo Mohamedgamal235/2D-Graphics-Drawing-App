@@ -10,9 +10,8 @@
 #include "DrawPointClipping.h"
 #include "DrawLineClipping.h"
 #include "DrawSpline.h"
-#include "vector"
-#include <fstream>
-#include <iostream>
+#include "DrawHermite.h"
+#include "DrawBezier.h"
 using namespace std;
 
 enum DrawShap {
@@ -51,54 +50,6 @@ enum DrawShap {
     LOAD_SCREEN
 };
 
-
-//------------------------------------ Save and Load --------------------------------------//
-struct Shape {
-    Point start;
-    Point end;
-    COLORREF color;
-    DrawShap algorithm;
-};
-
-vector<Shape> shapes;
-
-
-void SaveToFile(const char *filename) {
-    ofstream out(filename);
-    if (!out.is_open()) {
-        MessageBoxA(NULL, "Failed to open file for saving!", "Error", MB_ICONERROR);
-        return;
-    }
-
-    for (auto &s: shapes) {
-        out << s.start.x << ' ' << s.start.y << ' '
-                << s.end.x << ' ' << s.end.y << ' '
-                << s.color << ' ' << static_cast<int>(s.algorithm) << '\n';
-    }
-
-    out.close();
-    MessageBoxA(NULL, "Shapes saved successfully.", "Success", MB_OK);
-}
-
-void LoadFromFile(const char *filename) {
-    ifstream in(filename);
-    if (!in.is_open()) {
-        MessageBoxA(NULL, "Failed to open file for loading!", "Error", MB_ICONERROR);
-        return;
-    }
-
-    shapes.clear();
-    Shape s;
-    int alg;
-    while (in >> s.start.x >> s.start.y >> s.end.x >> s.end.y >> s.color >> alg) {
-        s.algorithm = static_cast<DrawShap>(alg);
-        shapes.push_back(s);
-    }
-
-    in.close();
-}
-
-// ------------------------------------- End of Save and Load ------------------------------------//
 
 
 Point startPoint;
@@ -202,24 +153,19 @@ void DrawPoint(HDC hdc, int x, int y, COLORREF color) {
 
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+    static POINT startPt;
+    static bool isDrawing = false;
+    HDC hdc;
+    PAINTSTRUCT ps;
+
     switch (uMsg) {
         case WM_CREATE:
             creatDrawingMenu(hwnd);
             break;
 
         case WM_PAINT: {
-            PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hwnd, &ps);
-
-            for (auto &s: shapes) {
-                switch (s.algorithm) {
-                    case LINE_MIDPOINT:
-                        (hdc, s.start, s.end, s.color);
-                        DrawLineMidpoint(hdc, s.start.x, s.start.y, s.end.x, s.end.y, currColor);
-                        break;
-                }
-            }
-
+            hdc = BeginPaint(hwnd, &ps);
+            
             if (currShape == FILL_CONVEX) {
                 for (int i = 0; i < p_index; i++) {
                     DrawPoint(hdc, points2[i].x, points2[i].y, currColor);
@@ -250,12 +196,12 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             } else if (cmd == CLEAR_SCREEN) {
                 InvalidateRect(hwnd, NULL, TRUE);
                 circleisDrawn = false;
-            } else if (cmd == SAVE_SCREEN) {
-                SaveToFile("shapes.txt");
-            } else if (cmd == LOAD_SCREEN) {
-                LoadFromFile("shapes.txt");
-                InvalidateRect(hwnd, NULL, TRUE);
-            } else {
+            }
+            else if (cmd == SAVE_SCREEN) {
+            }
+            else if (cmd == LOAD_SCREEN) {
+            }
+            else {
                 currShape = cmd;
                 if (cmd == CLIP_LINE_RECT || cmd == CLIP_POINT_RECT || cmd == CLIP_POLYGON_RECT) {
                     HDC hdc = GetDC(hwnd);
@@ -275,21 +221,29 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         }
 
         case WM_LBUTTONDOWN: {
-            startPoint.x = LOWORD(lParam);
-            startPoint.y = HIWORD(lParam);
-
-            if (currShape == FILL_CONVEX || currShape == FILL_NONCONVEX) {
-                HDC hdc = GetDC(hwnd);
-                DrawPoint(hdc, startPoint.x, startPoint.y, currColor);
-                ReleaseDC(hwnd, hdc);
-            } else if (currShape == CLIP_POLYGON_RECT) {
-                HDC hdc = GetDC(hwnd);
-                DrawPoint(hdc, startPoint.x, startPoint.y, RGB(0, 0, 0));
-                p_index++;
-                ReleaseDC(hwnd, hdc);
+            if (currShape == FILL_BEZIER) {
+                startPoint.x = LOWORD(lParam);
+                startPoint.y = HIWORD(lParam);
+                isDrawing = true;
             }
+            else {
+                startPoint.x = LOWORD(lParam);
+                startPoint.y = HIWORD(lParam);
+            
+                if (currShape == FILL_CONVEX || currShape == FILL_NONCONVEX) {
+                    HDC hdc = GetDC(hwnd);
+                    DrawPoint(hdc, startPoint.x, startPoint.y, currColor);
+                    ReleaseDC(hwnd, hdc);
+                }
+                else if (currShape == CLIP_POLYGON_RECT) {
+                    HDC hdc = GetDC(hwnd);
+                    DrawPoint(hdc, startPoint.x, startPoint.y, RGB(0, 0, 0));
+                    p_index++;
+                    ReleaseDC(hwnd, hdc);
+                }
 
-            isDrawing = true;
+                isDrawing = true;
+            }
             break;
         }
 
@@ -299,11 +253,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             int y2 = HIWORD(lParam);
             HDC hdc = GetDC(hwnd);
 
-            Point endPoint;
-            endPoint.x = x2;
-            endPoint.y = y2;
-            Shape s = {startPoint, endPoint, currColor, currShape};
-            shapes.push_back(s);
+           
 
             switch (currShape) {
                 case LINE_DDA:
@@ -349,8 +299,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 case FILL_CIRCLE_WITH_LINE: {
                     if (!circleisDrawn) {
                         // First click - draw the circle
-                        cir_r = (int) sqrt((x2 - startPoint.x) * (x2 - startPoint.x) +
-                                           (y2 - startPoint.y) * (y2 - startPoint.y));
+                        cir_r = (int)sqrt((x2 - startPoint.x) * (x2 - startPoint.x) + 
+                                       (y2 - startPoint.y) * (y2 - startPoint.y));
                         cir_x = startPoint.x;
                         cir_y = startPoint.y;
                         DrawCircleMidpoint(hdc, cir_x, cir_y, cir_r, currColor);
@@ -375,40 +325,72 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 }
 
                 case FILL_CIRCLE_WITH_CIRCLE: {
-                    if (!circleisDrawn) {
-                        // First click - draw the circle
-                        cir_r = (int) sqrt((x2 - startPoint.x) * (x2 - startPoint.x) +
-                                           (y2 - startPoint.y) * (y2 - startPoint.y));
-                        cir_x = startPoint.x;
-                        cir_y = startPoint.y;
-                        DrawCircleMidpoint(hdc, cir_x, cir_y, cir_r, currColor);
-                        circleisDrawn = true;
-                    } else {
-                        // Second click - determine quarter and fill
-                        int quarter = 0;
-                        if (x2 >= cir_x && y2 <= cir_y)
-                            quarter = 1; // Top Right
-                        else if (x2 < cir_x && y2 <= cir_y)
-                            quarter = 2; // Top Left
-                        else if (x2 < cir_x && y2 > cir_y)
-                            quarter = 3; // Bottom Left
-                        else if (x2 >= cir_x && y2 > cir_y)
-                            quarter = 4; // Bottom Right
+                    
+                }
 
-                        if (quarter > 0) {
-                            FillCircleWithCircles(hdc, cir_x, cir_y, cir_r, quarter, currColor);
-                        }
+                case FILL_HERMITE: {
+                    // Calculate initial dimensions
+                    int left = min(startPoint.x, x2);
+                    int right = max(startPoint.x, x2);
+                    int top = min(startPoint.y, y2);
+                    int bottom = max(startPoint.y, y2);
+                    
+                    // Make it a perfect square by using the larger dimension
+                    int width = right - left;
+                    int height = bottom - top;
+                    int size = max(width, height);
+                    
+                    // Adjust dimensions to make it a square
+                    if (width < height) {
+                        // Expand width to match height
+                        int expansion = (height - width) / 2;
+                        left -= expansion;
+                        right = left + size;
+                    } else if (height < width) {
+                        // Expand height to match width
+                        int expansion = (width - height) / 2;
+                        top -= expansion;
+                        bottom = top + size;
                     }
+                    
+                    // Draw the square outline
+                    HPEN pen = CreatePen(PS_SOLID, 1, currColor);
+                    HPEN oldPen = (HPEN)SelectObject(hdc, pen);
+                    MoveToEx(hdc, left, top, NULL);
+                    LineTo(hdc, right, top);
+                    LineTo(hdc, right, bottom);
+                    LineTo(hdc, left, bottom);
+                    LineTo(hdc, left, top);
+                    SelectObject(hdc, oldPen);
+                    DeleteObject(pen);
+                    
+                    // Fill the square with Hermite curves
+                    FillSquareWithHermite(hdc, left, top, right, bottom, currColor);
                     break;
                 }
 
-                case FILL_HERMITE:
-                    // code
+                case FILL_BEZIER: {
+                    // Calculate rectangle dimensions from the two points
+                    int left = min(startPoint.x, x2);
+                    int right = max(startPoint.x, x2);
+                    int top = min(startPoint.y, y2);
+                    int bottom = max(startPoint.y, y2);
+                    
+                    // Draw the rectangle outline
+                    HPEN pen = CreatePen(PS_SOLID, 1, currColor);
+                    HPEN oldPen = (HPEN)SelectObject(hdc, pen);
+                    MoveToEx(hdc, left, top, NULL);
+                    LineTo(hdc, right, top);
+                    LineTo(hdc, right, bottom);
+                    LineTo(hdc, left, bottom);
+                    LineTo(hdc, left, top);
+                    SelectObject(hdc, oldPen);
+                    DeleteObject(pen);
+                    
+                    // Fill the rectangle with Bezier curves
+                    FillRectangleWithBezier(hdc, left, top, right, bottom, currColor);
                     break;
-
-                case FILL_BEZIER:
-                    // code
-                    break;
+                }
 
                 case FILL_CONVEX: {
                     points2[p_index].x = x2;
