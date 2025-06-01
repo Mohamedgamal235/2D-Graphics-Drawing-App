@@ -33,7 +33,6 @@ void FillCircleWithCircles(HDC hdc, int xc, int yc, int r, int quarter,COLORREF 
 void Put8PixelsWithClipping(HDC hdc, int xc, int yc, int i, int y,int r,int x1, int y1 ,COLORREF c);
 
 
-
 void FillSquareWithHermite(HDC hdc, int left, int top, int right, int bottom, COLORREF color);
 void FillRectangleWithBezier(HDC hdc);
 void ConvexFilling(HDC hdc, Point p[], int n, COLORREF color);
