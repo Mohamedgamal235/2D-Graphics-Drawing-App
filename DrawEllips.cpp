@@ -26,7 +26,7 @@ void DrawEllipseDirect(HDC hdc, int x1, int y1, int x2, int y2, COLORREF c) {
     double theta = atan2(dy, dx);
 
     double t;
-    for (t = 0; t < 2 * M_PI; t += 0.000001) {
+    for (t = 0; t < 2 * M_PI; t += 0.0001) {
         int x = (int) (a * cos(t));
         int y = (int) (b * sin(t));
 
