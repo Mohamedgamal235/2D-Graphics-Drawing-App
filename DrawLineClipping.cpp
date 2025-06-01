@@ -1,13 +1,8 @@
 #include <windows.h>
-#include "DrawLine.cpp"
+#include "DrawLine.h"
+#include "DrawLineClipping.h"
 
 // Utalitiy Functions
-union OutCode{
-    unsigned all : 4;
-    struct{
-        unsigned left : 1, right : 1,top : 1, bottom : 1;
-    };
-};
 OutCode getOutCode(double x, double y,double x_left, double x_right, double y_top, double y_bottom){
     OutCode result;
     result.all = 0;

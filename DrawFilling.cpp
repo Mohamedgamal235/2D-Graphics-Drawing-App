@@ -1,13 +1,9 @@
 #include <windows.h>
 #include <list>
 #include <cmath>
-#include "DrawLineClipping.cpp"
+#include "DrawLine.h"
+#include "DrawFilling.h"
 using namespace std;
-
-struct Point {
-    int x, y;
-    Point(int x = 0 , int y = 0) : x(x) , y(y) {}
-};
 
 void swap(int& x , int& y) {
     int temp = x;
@@ -26,13 +22,13 @@ void swap(Point& p1 , Point& p2) {
 // -------------------------------------------------------------------------------------
 // Ahmed Mohsenvoid
 void FillCircleWithLines(HDC hdc, int xc, int yc, int r, int quarter, COLORREF color) {
-    // Quarter 1: Top Right
-    // Quarter 2: Top Left
-    // Quarter 3: Bottom Left
-    // Quarter 4: Bottom Right
+    // Q1: Top Right
+    // Q 2: Top Left
+    // Q3: Bottom Left
+    // Q4: Bottom Right
     
     switch(quarter) {
-        case 1: // Top Right
+        case 1: 
             for(int x = xc; x <= xc + r; x++) {
                 int y1 = yc;
                 int y2 = yc - (int)sqrt(r * r - (x - xc) * (x - xc));
@@ -145,11 +141,6 @@ void ConvexFilling(HDC hdc , Point p[] , int n , COLORREF color){
 // -------------------------------------------------------------------------------------
 
 // Osama
-struct PolygonPoint{
-    int x, y;
-    PolygonPoint(int x = 0, int y = 0):x(x),y(y){};
-};
-
 void swap(PolygonPoint& p1, PolygonPoint& p2){
     swap(p1.x,p2.x);
     swap(p1.y,p2.y);

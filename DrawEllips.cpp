@@ -1,5 +1,6 @@
 #include <windows.h>
 #include <cmath>
+#include "DrawEllips.h"
 using namespace std ;
 #define ll long long
 #define M_PI 3.14159265358979323846

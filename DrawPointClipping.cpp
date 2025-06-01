@@ -1,5 +1,6 @@
 #include <windows.h>
 using namespace std;
+#include "DrawPointClipping.h"
 
 
 void drawDot(HDC hdc, int x, int y, COLORREF color, int size = 5) {

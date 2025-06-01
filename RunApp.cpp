@@ -1,12 +1,15 @@
-#include <minwindef.h>
 #include <windows.h>
-#include "DrawCircle.cpp"
-#include "DrawEllips.cpp"
-#include "DrawFilling.cpp"
-#include "DrawFloodFill.cpp"
-#include "DrawWindow.cpp"
-#include "DrawPolygonClipping.cpp"
-#include "DrawPointClipping.cpp"
+#include <cmath>
+#include "DrawLine.h"
+#include "DrawCircle.h"
+#include "DrawEllips.h"
+#include "DrawFilling.h"
+#include "DrawFloodFill.h"
+#include "DrawWindow.h"
+#include "DrawPolygonClipping.h"
+#include "DrawPointClipping.h"
+#include "DrawLineClipping.h"
+#include "DrawSpline.h"
 
 using namespace std;
 

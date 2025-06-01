@@ -1,14 +1,8 @@
 #include <windows.h>
 #include <vector>
+#include "DrawPolygonClipping.h"
 using namespace std;
 
-struct Vertex{
-    double x , y ; 
-    Vertex(double x , double y){
-        this->x = x ; 
-        this->y = y ; 
-    }
-};
 
 typedef vector<Vertex> VertexList;
 typedef bool (*IsIn)(Vertex & v , int edge) ;    

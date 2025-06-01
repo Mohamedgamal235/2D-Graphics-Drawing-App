@@ -1,28 +1,48 @@
 #include <windows.h>
 #include <cmath>
-
+#include <algorithm>  // for std::swap
+#include "DrawLine.h"
 using namespace std ;
 
 // Ahmed Mohsen
-void DrawLineDDA(HDC hdc, int x1, int y1, int x2, int y2, COLORREF c) {
+void DrawLineDDA(HDC hdc, int x1, int y1, int x2, int y2, COLORREF color) {
     int dx = x2 - x1;
     int dy = y2 - y1;
-
-    int steps = max(abs(dx), abs(dy));
-    if (steps == 0) {
-        SetPixel(hdc, x1, y1, c);
-        return;
-    }
-
-    double x_inc = dx / (double)steps;
-    double y_inc = dy / (double)steps;
-
-    double x = x1;
-    double y = y1;
-    for (int i = 0; i <= steps; i++) {
-        SetPixel(hdc, round(x), round(y), c);
-        x += x_inc;
-        y += y_inc;
+    SetPixel(hdc, x1, y1, color);
+    if (abs(dx) >= abs(dy)) {
+        int x = x1;
+        double y = y1;
+        double m = (double)dy / dx;
+        if (dx > 0) {
+            while (x < x2) {
+                x++;
+                y += m;
+                SetPixel(hdc, x, round(y), color);
+            }
+        } else if (dx < 0) {
+            while (x > x2) {
+                x--;
+                y -= m;
+                SetPixel(hdc, x, round(y), color);
+            }
+        }
+    } else {
+        int y = y1;
+        double x = x1;
+        double m = (double)dx / dy;
+        if (dy > 0) {
+            while (y < y2) {
+                y++;
+                x += m;
+                SetPixel(hdc, round(x), y, color);
+            }
+        } else if (dy < 0) {
+            while (y > y2) {
+                y--;
+                x -= m;
+                SetPixel(hdc, round(x), y, color);
+            }
+        }
     }
 }
 
@@ -30,37 +50,58 @@ void DrawLineDDA(HDC hdc, int x1, int y1, int x2, int y2, COLORREF c) {
 // -------------------------------------------
 
 // Anas
-void DrawLineMidpoint(HDC hdc, int x1, int y1, int x2, int y2, COLORREF c) {
-    int dx = abs(x2 - x1);
-    int dy = abs(y2 - y1);
-    int sx = (x2 >= x1) ? 1 : -1;
-    int sy = (y2 >= y1) ? 1 : -1;
+void DrawLineMidpoint(HDC hdc, int x1, int y1, int x2, int y2, COLORREF color) {
+    int dx = x2 - x1;
+    int dy = y2 - y1;
+    int d, d1, d2;
+    int x = x1, y = y1;
 
-    int x = x1;
-    int y = y1;
-
-    if (dx > dy) {
-        int d = 2 * dy - dx;
-        for (int i = 0; i <= dx; i++) {
-            SetPixel(hdc, x, y, c);
-            if (d >= 0) {
-                y += sy;
-                d -= 2 * dx;
-            }
-            x += sx;
-            d += 2 * dy;
+    SetPixel(hdc, x1, y1, color);
+    if (abs(dx) >= abs(dy)) {
+        if (dx < 0) {
+            std::swap(x1, x2);
+            std::swap(y1, y2);
+            dx = -dx;
+            dy = -dy;
+            x = x1;
+            y = y1;
         }
-    }
-    else {
-        int d = 2 * dx - dy;
-        for (int i = 0; i <= dy; i++) {
-            SetPixel(hdc, x, y, c);
-            if (d >= 0) {
-                x += sx;
-                d -= 2 * dy;
+        d = dx - 2 * abs(dy);
+        d1 = -2 * abs(dy);
+        d2 = 2 * (dx - abs(dy));
+
+        while (x < x2) {
+            if (d > 0) {
+                d += d1;
+            } else {
+                d += d2;
+                y += (dy > 0) ? 1 : -1;
             }
-            y += sy;
-            d += 2 * dx;
+            x++;
+            SetPixel(hdc, x, y, color);
+        }
+    } else {
+        if (dy < 0) {
+            std::swap(x1, x2);
+            std::swap(y1, y2);
+            dx = -dx;
+            dy = -dy;
+            x = x1;
+            y = y1;
+        }
+        d = dy - 2 * abs(dx);
+        d1 = -2 * abs(dx);
+        d2 = 2 * (dy - abs(dx));
+
+        while (y < y2) {
+            if (d > 0) {
+                d += d1;
+            } else {
+                d += d2;
+                x += (dx > 0) ? 1 : -1;
+            }
+            y++;
+            SetPixel(hdc, x, y, color);
         }
     }
 }
@@ -68,14 +109,12 @@ void DrawLineMidpoint(HDC hdc, int x1, int y1, int x2, int y2, COLORREF c) {
 // -------------------------------------------
 
 // Osama
-void DrawLineParametric(HDC hdc , int x1, int y1, int x2, int y2 , COLORREF c){
-    int x,y;
-    int dx = x2 - x1;
-    int dy = y2 - y1;
-    double step = 1.0 / max(abs(dx),abs(dy));
-    for (double i = 0; i < 1.0; i+=step) {
-        x = dx * i + x1;
-        y = dy * i + y1;
-        SetPixel(hdc,x,y,c);
+void DrawLineParametric(HDC hdc, int x1, int y1, int x2, int y2, COLORREF color) {
+    double dx = x2 - x1;
+    double dy = y2 - y1;
+    for (double t = 0; t <= 1; t += 0.001) {
+        int x = round(x1 + t * dx);
+        int y = round(y1 + t * dy);
+        SetPixel(hdc, x, y, color);
     }
 }
