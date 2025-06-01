@@ -15,11 +15,15 @@ struct PolygonPoint {
 };
 
 // Helper function for circle clipping
-bool IsPointInsideClippingCircle(int x, int y, int clipXc, int clipYc, int clipR);
+bool IsPointInsideClippingCircle(int x, int y, int clipXc, int clipYc, int clipR,COLORREF c);
+void DrawCircleModifiedMidpoint2(HDC hdc, int xc, int yc, int r, int xc_big, int yc_big, int R_big, COLORREF color);
+void PutPixelIfInBigCircle(HDC hdc, int x, int y, int xc_big, int yc_big, int R, COLORREF color) ;
+
 
 // Circle filling functions with clipping
 void FillCircleWithLines(HDC hdc, int xc, int yc, int r, int quarter, COLORREF color);
-void FillCircleWithCircles(HDC hdc, int xc, int yc, int r, int quarter, int clipXc, int clipYc, int clipR);
+void FillCircleWithCircles(HDC hdc, int xc, int yc, int r, int quarter,COLORREF color);
+void Put8PixelsWithClipping(HDC hdc, int xc, int yc, int i, int y,int r,int x1, int y1 ,COLORREF c);
 
 // Other filling functions
 void FillSquareWithHermite(HDC hdc);
