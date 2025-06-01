@@ -13,7 +13,9 @@ void drawDot(HDC hdc, int x, int y, COLORREF color, int size = 5) {
 }
 
 // Anas Adel
-void ClipPointRectangle(HDC hdc) {
+void ClipPointRectangle(HDC hdc, int x, int y, int xleft, int ytop, int xright, int ybottom, COLORREF color) {
+    if (x >= xleft && x <= xright && y >= ytop && y <= ybottom) 
+        drawDot(hdc, x, y, color);
 }
 
 
@@ -21,8 +23,7 @@ void ClipPointRectangle(HDC hdc) {
 
 
 // Ahmed Mohsen
-void ClipPointSquare(HDC hdc, int x, int y, int top, int left, int bottom, int right, COLORREF c, int r) {
-    if (x < right && x > left && y < bottom && y > top) {
-        drawDot(hdc, x, y, c, r);
-    }
+void ClipPointSquare(HDC hdc, int x, int y, int top, int left, int bottom, int right, COLORREF c) {
+    if (x < right && x > left && y < bottom && y > top) 
+        drawDot(hdc, x, y, c);
 }

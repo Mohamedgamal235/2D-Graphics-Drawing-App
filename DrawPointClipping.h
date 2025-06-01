@@ -3,7 +3,7 @@
 
 #include <windows.h>
 
-void ClipPointSquare(HDC hdc, int x, int y, int xleft, int ytop, int xright, int ybottom, COLORREF color, int pointRadius);
-void ClipPointRectangle(HDC hdc);
+void ClipPointRectangle(HDC hdc, int x, int y, int xleft, int ytop, int xright, int ybottom, COLORREF color);
+void ClipPointSquare(HDC hdc, int x, int y, int xleft, int ytop, int xright, int ybottom, COLORREF color);
 
 #endif // DRAW_POINT_CLIPPING_H 

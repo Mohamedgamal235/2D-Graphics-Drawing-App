@@ -64,6 +64,12 @@ int cir_x = 0 ;
 int cir_y  = 0 ; 
 
 
+// Add after other global variables
+Vector2 splinePoints[100];  // Array to store spline points
+int splinePointCount = 0;   // Counter for spline points
+const double CARDINAL_C = 0.5;  // Tension parameter for cardinal spline
+
+
 // --------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------
 
@@ -197,6 +203,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             } else if (cmd == CLEAR_SCREEN) {
                 InvalidateRect(hwnd, NULL, TRUE);
                 circleisDrawn = false;
+                splinePointCount = 0;  // Reset spline points
             }
             else if (cmd == SAVE_SCREEN) {
             }
@@ -204,6 +211,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             }
             else {
                 currShape = cmd;
+                if (cmd != SPLINE_CARDINAL) {
+                    splinePointCount = 0;  // Reset spline points when switching to non-spline shape
+                }
                 if (cmd == CLIP_LINE_RECT || cmd == CLIP_POINT_RECT || cmd == CLIP_POLYGON_RECT){
                     HDC hdc = GetDC(hwnd);
                     DrawRectungle(hdc, 200, 100, 800, 300);
@@ -223,7 +233,22 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         }
 
         case WM_LBUTTONDOWN: {
-            if (currShape == FILL_BEZIER) {
+            if (currShape == SPLINE_CARDINAL) {
+                if (splinePointCount >= 100) return 0;
+                
+                splinePoints[splinePointCount].x = LOWORD(lParam);
+                splinePoints[splinePointCount].y = HIWORD(lParam);
+                splinePointCount++;
+
+                HDC hdc = GetDC(hwnd);
+                DrawPoint(hdc, LOWORD(lParam), HIWORD(lParam), currColor);
+
+                if (splinePointCount >= 3)
+                    DrawCardinalSpline(hdc, splinePoints, splinePointCount, CARDINAL_C, 100, currColor);
+
+                ReleaseDC(hwnd, hdc);
+            }
+            else if (currShape == FILL_BEZIER) {
                 startPoint.x = LOWORD(lParam);
                 startPoint.y = HIWORD(lParam);
                 isDrawing = true;
@@ -249,13 +274,21 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             break;
         }
 
+        case WM_RBUTTONDOWN: {
+            if (currShape == SPLINE_CARDINAL) {
+                // Right click resets the spline
+                splinePointCount = 0;
+                InvalidateRect(hwnd, NULL, TRUE);
+                return 0;
+            }
+            break;
+        }
+
         case WM_LBUTTONUP: {
             if (!isDrawing) break;
             int x2 = LOWORD(lParam);
             int y2 = HIWORD(lParam);
             HDC hdc = GetDC(hwnd);
-
-           
 
             switch (currShape) {
                 case LINE_DDA:
@@ -484,10 +517,16 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     }
                 }
                 case CLIP_POINT_SQUARE: {
-                    int pointRadius =5;
-                    ClipPointSquare(hdc,startPoint.x,startPoint.y,200,200,500,500,currColor,pointRadius);
-                }
+                    ClipPointSquare(hdc,startPoint.x,startPoint.y,200,200,500,500,currColor);
                     break;
+                }
+
+                case CLIP_POINT_RECT: {
+                    int pointRadius = 5;
+                    ClipPointRectangle(hdc,startPoint.x,startPoint.y,200, 100, 800, 300,currColor);
+                    break;
+                }
+                    
 
                 default:
                     break;
