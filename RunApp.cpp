@@ -325,7 +325,31 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 }
 
                 case FILL_CIRCLE_WITH_CIRCLE: {
-                    
+                    if (!circleisDrawn) {
+                        // First click - draw the circle
+                        cir_r = (int)sqrt((x2 - startPoint.x) * (x2 - startPoint.x) +
+                                       (y2 - startPoint.y) * (y2 - startPoint.y));
+                        cir_x = startPoint.x;
+                        cir_y = startPoint.y;
+                        DrawCircleMidpoint(hdc, cir_x, cir_y, cir_r, currColor);
+                        circleisDrawn = true;
+                    } else {
+                        // Second click - determine quarter and fill
+                        int quarter = 0;
+                        if (x2 >= cir_x && y2 <= cir_y)
+                            quarter = 1; // Top Right
+                        else if (x2 < cir_x && y2 <= cir_y)
+                            quarter = 2; // Top Left
+                        else if (x2 < cir_x && y2 > cir_y)
+                            quarter = 3; // Bottom Left
+                        else if (x2 >= cir_x && y2 > cir_y)
+                            quarter = 4; // Bottom Right
+
+                        if (quarter > 0) {
+                            FillCircleWithCircles(hdc, cir_x, cir_y, cir_r, quarter, currColor);
+                        }
+                    }
+                    break;
                 }
 
                 case FILL_HERMITE: {
