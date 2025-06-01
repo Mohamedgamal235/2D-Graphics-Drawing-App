@@ -1,13 +1,13 @@
+#include <minwindef.h>
 #include <windows.h>
 #include "DrawCircle.cpp"
-#include "DrawLineClipping.cpp"
 #include "DrawEllips.cpp"
 #include "DrawFilling.cpp"
 #include "DrawFloodFill.cpp"
-#include "DrawSpline.cpp"
 #include "DrawWindow.cpp"
 #include "DrawPolygonClipping.cpp"
 #include "DrawPointClipping.cpp"
+
 using namespace std;
 
 enum DrawShap {
@@ -52,6 +52,10 @@ Point startPoint;
 DrawShap currShape = NONE;
 COLORREF currColor = RGB(0, 0, 0); // black
 bool isDrawing = false;
+bool circleisDrawn = false;
+int cir_r = 0 ; 
+int cir_x = 0 ;
+int cir_y  = 0 ; 
 
 // --------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------
@@ -200,6 +204,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     DrawSquare(hdc, 200, 200 , 300);
                     ReleaseDC(hwnd, hdc);
                 }
+                // Reset circle state when selecting Fill Circle With Lines
+                if (cmd == FILL_CIRCLE_WITH_LINE) {
+                    circleisDrawn = false;
+                }
             }
             break;
         }
@@ -271,9 +279,34 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     break;
                 }
 
-                case FILL_CIRCLE_WITH_LINE:
-                    // code
+                case FILL_CIRCLE_WITH_LINE: {
+                    if (!circleisDrawn) {
+                        // First click - draw the circle
+                        cir_r = (int)sqrt((x2 - startPoint.x) * (x2 - startPoint.x) + 
+                                         (y2 - startPoint.y) * (y2 - startPoint.y));
+                        cir_x = startPoint.x;
+                        cir_y = startPoint.y;
+                        DrawCircleMidpoint(hdc, cir_x, cir_y, cir_r, currColor);
+                        circleisDrawn = true;
+                    }
+                    else {
+                        // Second click - determine quarter and fill
+                        int quarter = 0;
+                        if (x2 >= cir_x && y2 <= cir_y) 
+                            quarter = 1;      // Top Right
+                        else if (x2 < cir_x && y2 <= cir_y) 
+                            quarter = 2;      // Top Left
+                        else if (x2 < cir_x && y2 > cir_y) 
+                            quarter = 3;      // Bottom Left
+                        else if (x2 >= cir_x && y2 > cir_y) 
+                            quarter = 4;      // Bottom Right
+                        
+                        if (quarter > 0) {
+                            FillCircleWithLines(hdc, cir_x, cir_y, cir_r, quarter, currColor);
+                        }
+                    }
                     break;
+                }
 
                 case FILL_CIRCLE_WITH_CIRCLE:
                     // code
