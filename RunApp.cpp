@@ -80,6 +80,8 @@ Vector2 splinePoints[100];  // Array to store spline points
 int splinePointCount = 0;   // Counter for spline points
 const double CARDINAL_C = 0.5;  // Tension parameter for cardinal spline
 
+// Add this with other global variables at the top
+bool shouldClear = false;
 
 void SaveToFile(const char* filename) {
     ofstream out(filename);
@@ -116,7 +118,6 @@ void LoadFromFile(const char* filename) {
     for (auto& s : shapes) {
         switch (s.algorithm) {
             case LINE_MIDPOINT:
-                (hdc, s.start, s.end, s.color);
             DrawLineMidpoint(hdc, s.start.x, s.start.y, s.end.x, s.end.y, currColor);
             break;
 
@@ -233,7 +234,22 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         case WM_PAINT: {
             hdc = BeginPaint(hwnd, &ps);
 
-
+            if (!shouldClear) {  // Only draw shapes if not cleared
+                for (const auto& s : shapes) {
+                    switch (s.algorithm) {
+                        case LINE_DDA:
+                            DrawLineDDA(hdc, s.start.x, s.start.y, s.end.x, s.end.y, s.color);
+                            break;
+                        case LINE_MIDPOINT:
+                            DrawLineMidpoint(hdc, s.start.x, s.start.y, s.end.x, s.end.y, s.color);
+                            break;
+                        case LINE_PARAMETRIC:
+                            DrawLineParametric(hdc, s.start.x, s.start.y, s.end.x, s.end.y, s.color);
+                            break;
+                        // ... rest of your shape drawing cases ...
+                    }
+                }
+            }
             
             if (currShape == FILL_CONVEX) {
                 for (int i = 0; i < p_index; i++) {
@@ -264,21 +280,26 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                         break;
                 }
             } else if (cmd == CLEAR_SCREEN) {
+                shapes.clear();  // Clear all saved shapes
+                shouldClear = true;  // Set the clear flag
                 InvalidateRect(hwnd, NULL, TRUE);
+                p_index = 0;
                 circleisDrawn = false;
-                splinePointCount = 0;  // Reset spline points
+                splinePointCount = 0;
             }
             else if (cmd == SAVE_SCREEN) {
                 SaveToFile("shapes.txt");
             }
             else if (cmd == LOAD_SCREEN) {
                 LoadFromFile("shapes.txt");
+                shouldClear = false;  // Reset clear flag when loading
                 InvalidateRect(hwnd, NULL, TRUE);
             }
             else {
                 currShape = cmd;
+                shouldClear = false;  // Reset clear flag when changing shape
                 if (cmd != SPLINE_CARDINAL) {
-                    splinePointCount = 0;  // Reset spline points when switching to non-spline shape
+                    splinePointCount = 0;
                 }
                 if (cmd == CLIP_LINE_RECT || cmd == CLIP_POINT_RECT || cmd == CLIP_POLYGON_RECT){
                     HDC hdc = GetDC(hwnd);
@@ -289,10 +310,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     HDC hdc = GetDC(hwnd);
                     DrawSquare(hdc, 200, 200 , 300);
                     ReleaseDC(hwnd, hdc);
-                }
-                // Reset states when selecting circle filling options
-                if (cmd == FILL_CIRCLE_WITH_LINE ) {
-                    circleisDrawn = false;
                 }
             }
             break;
