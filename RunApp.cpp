@@ -12,6 +12,9 @@
 #include "DrawSpline.h"
 #include "DrawHermite.h"
 #include "DrawBezier.h"
+#include "vector"
+#include <fstream>
+#include <iostream>
 using namespace std;
 
 enum DrawShap {
@@ -50,6 +53,50 @@ enum DrawShap {
     LOAD_SCREEN
 };
 
+//------------------------------------ Save and Load --------------------------------------//
+struct Shape {
+    Point start;
+    Point end;
+    COLORREF color;
+    DrawShap algorithm;
+};
+vector<Shape> shapes;
+
+
+void SaveToFile(const char* filename) {
+    ofstream out(filename);
+    if (!out.is_open()) {
+        MessageBoxA(NULL, "Failed to open file for saving!", "Error", MB_ICONERROR);
+        return;
+    }
+
+    for (auto& s : shapes) {
+        out << s.start.x << ' ' << s.start.y << ' '
+            << s.end.x << ' ' << s.end.y << ' '
+            << s.color << ' ' << s.algorithm << '\n';
+    }
+
+    out.close();
+    MessageBoxA(NULL, "Shapes saved successfully.", "Success", MB_OK);
+}
+
+void LoadFromFile(const char* filename) {
+    ifstream in(filename);
+    if (!in.is_open()) {
+        MessageBoxA(NULL, "Failed to open file for loading!", "Error", MB_ICONERROR);
+        return;
+    }
+
+    shapes.clear();
+    Shape s;
+    while (in >> s.start.x >> s.start.y >> s.end.x >> s.end.y >> s.color >> s.algorithm) {
+        shapes.push_back(s);
+    }
+
+    in.close();
+}
+
+// ------------------------------------- End of Save and Load ------------------------------------//
 
 
 Point startPoint;
@@ -171,6 +218,16 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
         case WM_PAINT: {
             hdc = BeginPaint(hwnd, &ps);
+
+            for (auto& s : shapes) {
+                 switch (s.algorithm) {
+                     case LINE_MIDPOINT: 
+                         (hdc, s.start, s.end, s.color); 
+                         DrawLineMidpoint(hdc, s.start.x, s.start.y, s.end.x, s.end.y, currColor);
+                         break;
+            
+                 }
+             }
             
             if (currShape == FILL_CONVEX) {
                 for (int i = 0; i < p_index; i++) {
@@ -206,8 +263,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 splinePointCount = 0;  // Reset spline points
             }
             else if (cmd == SAVE_SCREEN) {
+                SaveToFile("shapes.txt");
             }
             else if (cmd == LOAD_SCREEN) {
+                LoadFromFile("shapes.txt");
+                InvalidateRect(hwnd, NULL, TRUE);
             }
             else {
                 currShape = cmd;
@@ -289,6 +349,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             int x2 = LOWORD(lParam);
             int y2 = HIWORD(lParam);
             HDC hdc = GetDC(hwnd);
+
+            Point endPoint; endPoint.x = x2; endPoint.y = y2;Add commentMore actions
+            Shape s = { startPoint,  endPoint, currColor, currShape };
+            shapes.push_back(s);
 
             switch (currShape) {
                 case LINE_DDA:
