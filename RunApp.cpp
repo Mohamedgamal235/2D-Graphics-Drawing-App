@@ -61,6 +61,24 @@ struct Shape {
     DrawShap algorithm;
 };
 vector<Shape> shapes;
+HDC hdc;
+
+Point startPoint;
+DrawShap currShape = NONE;
+COLORREF currColor = RGB(0, 0, 0); // black
+bool isDrawing = false;
+
+
+bool circleisDrawn = false;
+int cir_r = 0 ;
+int cir_x = 0 ;
+int cir_y  = 0 ;
+
+
+// Add after other global variables
+Vector2 splinePoints[100];  // Array to store spline points
+int splinePointCount = 0;   // Counter for spline points
+const double CARDINAL_C = 0.5;  // Tension parameter for cardinal spline
 
 
 void SaveToFile(const char* filename) {
@@ -89,8 +107,20 @@ void LoadFromFile(const char* filename) {
 
     shapes.clear();
     Shape s;
-    while (in >> s.start.x >> s.start.y >> s.end.x >> s.end.y >> s.color >> s.algorithm) {
+    int alg;
+    while (in >> s.start.x >> s.start.y >> s.end.x >> s.end.y >> s.color >> alg) {
+        s.algorithm = static_cast<DrawShap>(alg);
         shapes.push_back(s);
+    }
+
+    for (auto& s : shapes) {
+        switch (s.algorithm) {
+            case LINE_MIDPOINT:
+                (hdc, s.start, s.end, s.color);
+            DrawLineMidpoint(hdc, s.start.x, s.start.y, s.end.x, s.end.y, currColor);
+            break;
+
+        }
     }
 
     in.close();
@@ -99,22 +129,6 @@ void LoadFromFile(const char* filename) {
 // ------------------------------------- End of Save and Load ------------------------------------//
 
 
-Point startPoint;
-DrawShap currShape = NONE;
-COLORREF currColor = RGB(0, 0, 0); // black
-bool isDrawing = false;
-
-
-bool circleisDrawn = false;
-int cir_r = 0 ; 
-int cir_x = 0 ;
-int cir_y  = 0 ; 
-
-
-// Add after other global variables
-Vector2 splinePoints[100];  // Array to store spline points
-int splinePointCount = 0;   // Counter for spline points
-const double CARDINAL_C = 0.5;  // Tension parameter for cardinal spline
 
 
 // --------------------------------------------------------------------------------
@@ -208,7 +222,7 @@ void DrawPoint(HDC hdc, int x, int y, COLORREF color) {
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     static POINT startPt;
     static bool isDrawing = false;
-    HDC hdc;
+
     PAINTSTRUCT ps;
 
     switch (uMsg) {
@@ -219,15 +233,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         case WM_PAINT: {
             hdc = BeginPaint(hwnd, &ps);
 
-            for (auto& s : shapes) {
-                 switch (s.algorithm) {
-                     case LINE_MIDPOINT: 
-                         (hdc, s.start, s.end, s.color); 
-                         DrawLineMidpoint(hdc, s.start.x, s.start.y, s.end.x, s.end.y, currColor);
-                         break;
-            
-                 }
-             }
+
             
             if (currShape == FILL_CONVEX) {
                 for (int i = 0; i < p_index; i++) {
@@ -350,7 +356,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             int y2 = HIWORD(lParam);
             HDC hdc = GetDC(hwnd);
 
-            Point endPoint; endPoint.x = x2; endPoint.y = y2;Add commentMore actions
+            Point endPoint; endPoint.x = x2; endPoint.y = y2;
             Shape s = { startPoint,  endPoint, currColor, currShape };
             shapes.push_back(s);
 
