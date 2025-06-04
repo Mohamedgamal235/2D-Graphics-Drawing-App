@@ -1,6 +1,12 @@
 #include <stack>
 #include <windows.h>
 #include "DrawFloodFill.h"
+using namespace std;
+
+struct Point {
+    int x, y;
+    Point(int x = 0, int y = 0) : x(x), y(y) {}
+};
 
 // Osama
 void RecursiveFloodFill(HDC hdc ,int x, int y, COLORREF oldColor, COLORREF newColor){
@@ -15,27 +21,26 @@ void RecursiveFloodFill(HDC hdc ,int x, int y, COLORREF oldColor, COLORREF newCo
 
 // -------------------------------------------
 
-// Ahmed Mohsen
-void NonRecursiveFloodFill(HDC hdc, int x, int y, COLORREF oldColor, COLORREF newColor ){
 
-    COLORREF targetColor = GetPixel(hdc, x, y);
-    if (targetColor == oldColor) return;
+void NonRecursiveFloodFill(HDC hdc, int x, int y, COLORREF bc, COLORREF fc) {
+    if (bc == fc) 
+        return;  
+    
+    stack<Point> st;
+    st.push(Point(x, y));
 
-    std::stack<std::pair<int, int>> s;
-    s.push({x, y});
-
-    while (!s.empty()) {
-        auto [cx, cy] = s.top();
-        s.pop();
-
-        COLORREF current = GetPixel(hdc, cx, cy);
-        if (current != targetColor) continue;
-
-        SetPixel(hdc, cx, cy, oldColor);
-
-        s.push({cx + 1, cy});
-        s.push({cx - 1, cy});
-        s.push({cx, cy + 1});
-        s.push({cx, cy - 1});
+    while (!st.empty()) {
+        Point current = st.top();
+        st.pop();
+        
+        COLORREF currColor = GetPixel(hdc, current.x, current.y);
+        
+        if (currColor != bc) continue;
+        
+        SetPixel(hdc, current.x, current.y, fc);
+        st.push(Point(current.x + 1, current.y));
+        st.push(Point(current.x - 1, current.y));
+        st.push(Point(current.x, current.y + 1));
+        st.push(Point(current.x, current.y - 1));
     }
 }
